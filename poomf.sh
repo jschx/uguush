@@ -1,11 +1,6 @@
 #!/bin/bash
 
 # poomf.sh - puush-like functionality for pomf.se
-# for best results, bind each operation to a hotkey using sxhkd or xbindkeys
-# inspired by onodera-punpun's pomf.sh (https://github.com/onodera-punpun)
-# upload functionality by kittykatt (https://github.com/KittyKatt)
-# clipboard, file upload, help, logging, notify-send, and selection functionality by joe (https://github.com/JSchilli1)
-# requires scrot, curl, xclip (for auto-copy), and libnotify (for notifications)
 
 # Get options
 while getopts fsu: option; do
