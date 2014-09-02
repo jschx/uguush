@@ -9,12 +9,12 @@
 
 # Get options
 while getopts fsu: option; do
-        case $option in
-            f)ful=1 opt=1;;
-            s)sel=1 opt=1;;
-            u)upl=1 opt=1;;
-            *)exit;;
-        esac
+    case $option in
+        f)ful=1 opt=1;;
+        s)sel=1 opt=1;;
+        u)upl=1 opt=1;;
+        *)exit;;
+    esac
 done
 
 # Helpful error if no options are passed
@@ -38,16 +38,17 @@ fi
 
 # Set the file to equal the option specified
 if [[ ! -z $upl ]]; then
-    file=$(echo $option)
+    file=$(echo $2)
 fi
 
+# Upload it and grab the url
+echo "uploading ${file}..."
 output=$(curl --silent -sf -F files[]="@$file" "http://pomf.se/upload.php")
-
 n=0
 while [[ $n -le 3 ]]; do
     printf "try #${n}..."
     if [[ "${output}" =~ '"success":true,' ]]; then
-        pomffile=$(echo "$output" | grep -Eo '"url":"[A-Za-z0-9]+.png",' | sed 's/"url":"//;s/",//')
+        pomffile=$(echo "$output" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')
         printf 'done.\n'
         break
     else
@@ -56,9 +57,6 @@ while [[ $n -le 3 ]]; do
     fi
 done
 
-# Upload it and grab the url
-#output=$(curl --silent -sf -F files[]="@$file" "http://pomf.se/upload.php")
-#pomffile=$(echo "$output" | grep -Eo '"url":"[A-Za-z0-9]+.png",' | sed 's/"url":"//;s/",//')
 url=http://a.pomf.se/$pomffile
 
 # Remove temporary files
@@ -76,3 +74,4 @@ echo $url >> ~/pomfs.txt
 
 # Display notification
 notify-send "pomf!" "$url"
+
