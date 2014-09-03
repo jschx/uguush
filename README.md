@@ -3,6 +3,8 @@ poomf.sh
 
 puush-like functionality for pomf.se
 
+![](http://a.pomf.se/uojram.png)
+
 usage
 =====
 
