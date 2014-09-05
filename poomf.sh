@@ -60,9 +60,9 @@ rm -f $file
 fi
 
 # Copy url to all clipboards
-echo $url | xclip -selection primary
-echo $url | xclip -selection secondary
-echo $url | xclip -selection clip-board
+echo -n $url | xclip -selection primary
+echo -n $url | xclip -selection secondary
+echo -n $url | xclip -selection clip-board
 
 # Write the url to a file
 echo $url >> ~/pomfs.txt
