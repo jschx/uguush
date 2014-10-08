@@ -1,71 +1,120 @@
 #!/bin/bash
 
-# poomf.sh - puush-like functionality for pomf.se
+# poomfsh - puush-like functionality for pomf.se
+
+## OPTIONS
 
 # Get options
-while getopts fsu: option; do
+while getopts fhsu: option; do
     case $option in
-        f)ful=1 opt=1;;
-        s)sel=1 opt=1;;
-        u)upl=1 opt=1;;
+        f)ful=1;;
+        h)hel=1;;
+        s)sel=1;;
+        u)upl=1;;
         *)exit;;
     esac
 done
 
-# Helpful error if no options are passed
-if [[ -z $opt ]]; then
-    echo "please provide an option:"
-    echo "-f            fullscreen"
-    echo "-s            selection"
-    echo "-u file       file upload"
+# Fullscreen
+if [[ -z $mul ]]; then
+    if [[ ! -z $ful ]]; then
+        # Take fullscreen scrot
+        file=$(scrot '%Y-%m-%d_scrot.png' -e 'echo -n $f')
+    fi
+else
+    echo "error: please only provide one option"
     exit
 fi
 
-# Capture fullscreen
-if [[ ! -z $ful ]]; then
-    file=$(scrot '%Y-%m-%d_scrot.png' -e 'echo -n $f')
+# Help
+if [[ -z $mul ]]; then
+    if [[ ! -z $hel ]]; then
+        # Display help
+        echo "please provide an option:"
+        echo "-f            fullscreen"
+        echo "-h            show this message"
+        echo "-s            selection"
+        echo "-u file       file upload"
+        exit
+    fi
+else
+    echo "error: please only provide one option"
+    exit
 fi
 
-# Provide a selection rectangle for capture
-if [[ ! -z $sel ]]; then
-    file=$(scrot '%Y-%m-%d_scrot.png' -s -e 'echo -n $f')
+# Selection
+if [[ -z $mul ]]; then
+    if [[ ! -z $sel ]]; then
+        # Take selection scrot
+        file=$(scrot -s '%Y-%m-%d_scrot.png' -e 'echo -n $f')
+    fi
+else
+    echo "error: please only provide one option"
+    exit
 fi
 
-# Set the file to equal the option specified
-if [[ ! -z $upl ]]; then
-    file=$(echo $2)
+# File
+if [[ -z $mul ]]; then
+    if [[ ! -z $upl ]]; then
+        # Get file
+        file=$(echo $2)
+        mul=1
+    fi
+else
+    echo "error: please only provide one option"
+    exit
 fi
+
+## UPLOADING
 
 # Upload it and grab the url
-echo "uploading ${file}..."
 output=$(curl --silent -sf -F files[]="@$file" "http://pomf.se/upload.php")
-n=0
-while [[ $n -le 3 ]]; do
-    printf "try #${n}..."
-    if [[ "${output}" =~ '"success":true,' ]]; then
-        pomffile=$(echo "$output" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')
-        printf 'done.\n'
-        break
-    else
-        printf 'failed.\n'
-        ((n = n +1))
-    fi
-done
-
-url=http://a.pomf.se/$pomffile
-
-# Remove temporary files
-if [[ -z $upl ]]; then
-rm -f $file
+if [[ ! -z $upl ]]; then
+    echo "uploading ${file}..."
+    n=0
+    while [[ $n -le 3 ]]; do
+        printf "\033[37m try #${n}..."
+        if [[ "${output}" =~ '"success":true,' ]]; then
+            pomffile=$(echo "$output" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')
+            printf '\033[32m done.\n'
+            suc=1
+            break
+        else
+            printf '\033[31m failed.\n'
+            ((n = n +1))
+        fi
+    done
+    url=http://a.pomf.se/$pomffile
+else
+    echo "uploading ${file}..."
+    n=0
+    while [[ $n -le 3 ]]; do
+        printf "\033[37m try #${n}..."
+        if [[ "${output}" =~ '"success":true,' ]]; then
+            pomffile=$(echo "$output" | grep -Eo '"url":"[A-Za-z0-9]+.png",' | sed 's/"url":"//;s/",//')
+            printf '\033[32m done.\n'
+            suc=1
+            break
+        else
+            printf '\033[31m failed.\n'
+            ((n = n +1))
+        fi
+    done
+    url=http://a.pomf.se/$pomffile
+    rm -f $file
 fi
 
-# Copy url to all clipboards
-echo -n $url | xclip -selection primary
-echo -n $url | xclip -selection secondary
-echo -n $url | xclip -selection clip-board
-
-# Write the url to a file
-echo $url >> ~/pomfs.txt
-
-# Display notification
-notify-send "pomf!" "$url"
+## OUTPUT
+if [[ ! -z $suc ]]; then
+    # Copy link to clipboard
+    echo $url | xclip -selection primary
+    echo $url | xclip -selection clipboard
+    # Log url to file
+    echo $url >> ~/pomfs.txt
+    # Notify user of completion
+    notify-send "pomf!" "$url"
+    # Print message to the term
+    echo -e "\033[37m file has been uploaded: $url"
+else
+    echo -e "\033[37m file was not uploaded, did you specify a valid file?"
+fi
