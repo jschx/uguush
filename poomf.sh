@@ -69,4 +69,3 @@ echo $url >> ~/pomfs.txt
 
 # Display notification
 notify-send "pomf!" "$url"
-
