@@ -107,8 +107,8 @@ fi
 ## OUTPUT
 if [[ ! -z $suc ]]; then
     # Copy link to clipboard
-    echo $url | xclip -selection primary
-    echo $url | xclip -selection clipboard
+    echo -n $url | xclip -selection primary
+    echo -n $url | xclip -selection clipboard
     # Log url to file
     echo $url >> ~/pomfs.txt
     # Notify user of completion
