@@ -30,7 +30,6 @@ fi
 if [[ -z $mul ]]; then
     if [[ ! -z $hel ]]; then
         # Display help
-        echo "please provide an option:"
         echo "-f            fullscreen"
         echo "-h            show this message"
         echo "-s            selection"
