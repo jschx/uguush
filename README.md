@@ -14,7 +14,7 @@ for best results, bind each operation to a hotkey using sxhkd or xbindkeys.
 requirements
 ============
 
-scrot, curl, xclip (for auto-copy), and libnotify (for notifications)
+maim + slop (for screenshot), curl, xclip (for auto-copy), and libnotify (for notifications)
 
 credit
 ======
