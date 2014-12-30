@@ -109,7 +109,7 @@ if [[ ! -z $suc ]]; then
     echo -n $url | xclip -selection primary
     echo -n $url | xclip -selection clipboard
     # Log url to file
-    echo $url >> ~/pomfs.txt
+    echo $url "<<" "$(date +"[%D] | [%H:%M:%S]")" >> ~/.pomfs.pomfd
     # Notify user of completion
     notify-send "pomf!" "$url"
     # Print message to the term
