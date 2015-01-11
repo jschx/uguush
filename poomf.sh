@@ -99,7 +99,7 @@ while [[ $n -le 3 ]]; do
     success=1
     break
   else
-    printf "w$red failed.$reset\n"
+    printf "$red failed.$reset\n"
     ((n = n +1))
   fi
 done
