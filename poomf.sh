@@ -121,7 +121,7 @@ if [[ ! -z $success ]]; then
     # Notify user of completion
     notify-send "pomf!" "$url"
     # Print message to the term
-    printf "$white file has been uploaded: $url$reset\n"
+    printf "file has been uploaded: $url\n"
 else
-    printf "$red file was not uploaded, did you specify a valid file?$reset\n"
+    printf "file was not uploaded, did you specify a valid filename?\n"
 fi
