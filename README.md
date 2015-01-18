@@ -8,9 +8,9 @@ puush-like functionality for pomf.se
 usage
 =====
 
--f for fullscreen capture, -s for a selection rectangle, and -u <file> to upload a file.
+-f for fullscreen capture, -s for a selection rectangle, and -u 'file' to upload a file
 
-for best results, bind each operation to a hotkey using sxhkd or xbindkeys.
+for best results, bind each operation to a hotkey using sxhkd or xbindkeys
 
 requirements
 ============
