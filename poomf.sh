@@ -33,7 +33,7 @@ done
 if [[ -z $multiple ]]; then
     if [[ ! -z $fullscreen ]]; then
         # Take fullscreen scrot
-        file=$(filename=$(date +%Y-%m-%d)_scrot.png ; maim $filename ; echo -n $filename)
+        file=$(filename=$(date +%Y-%m-%d)_scrot.png ; maim --hidecursor $filename ; echo -n $filename)
     fi
 else
     echo "error: please only provide one option"
@@ -59,7 +59,7 @@ fi
 if [[ -z $multiple ]]; then
     if [[ ! -z $selection ]]; then
         # Take selection scrot
-        file=$(filename=$(date +%Y-%m-%d)_scrot.png ; maim -s $filename ; echo -n $filename)
+        file=$(filename=$(date +%Y-%m-%d)_scrot.png ; maim -s --hidecursor $filename ; echo -n $filename)
     fi
 else
     echo "error: please only provide one option"
