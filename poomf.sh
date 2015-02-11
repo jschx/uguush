@@ -2,7 +2,7 @@
 #
 # created by JS1 - js1 at openmailbox dot org
 # refactored by arianon - arianon at openmailbox dot org
-# poomf.sh - puush-like functionality for pomf.se
+# poomf.sh - puush-like functionality for pomf.se and uguu.se
 
 ## CONFIGURATION
 
@@ -31,6 +31,7 @@ function usage {
 	Options:
 	    -h         Show this help message.
 	    -f         Take a fullscreen screenshot.
+	    -g         Use uguu.se to upload. It keeps files for 30 minutes and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
 	    -u <file>  Upload a file
 	HELP
@@ -40,11 +41,14 @@ function usage {
 test -z $1 && { usage && exit 1; }
 
 ## PARSE OPTIONS
-while getopts :fhsu: opt; do
+while getopts :fghsu: opt; do
 	case $opt in
 		f)
 			# Take shot.
 			maim $FILE ;;
+		g)
+			# Change mode to uguu
+			mode=1 ;;
 		s)
 			# Take shot with selection.
 			maim -s $FILE ;;
@@ -64,8 +68,12 @@ done
 for (( i = 1; i <= 3; i++ )); do
 	echo -n "Try #${i} ... "
 
-	# Actual upload
-	pomf=$(curl -sf -F files[]="@$FILE" "http://pomf.se/upload.php?output=gyazo")
+	# Upload file to selected host
+	if [ -z $mode ]; then
+		pomf=$(curl -sf -F files[]="@$FILE" "http://pomf.se/upload.php?output=gyazo")
+	else
+		pomf=$(curl -sf -F file="@$FILE" "http://uguu.se/api.php?d=upload")
+	fi
 
 	if (( $? == 0 )); then
 
