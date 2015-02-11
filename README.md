@@ -15,15 +15,11 @@ for best results, bind each operation to a hotkey using sxhkd or xbindkeys
 requirements
 ============
 
-curl
-
-libnotify (for notifications)
-
-maim (for screenshot)
-
-slop (for selection capture)
-
-xclip (for auto-copy)
+- curl
+- libnotify (for notifications)
+- maim (for screenshot)
+- slop (for selection capture)
+- xclip (for auto-copy)
 
 
 credit
