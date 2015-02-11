@@ -1,7 +1,7 @@
 # poomf
 ctrl + shift + 3
-    bash ~/bin/poomf.sh -f
+    poomf.sh -f
 
 # poomf select
 ctrl + shift + @4
-    bash ~/bin/poomf.sh -s
+    poomf.sh -s
