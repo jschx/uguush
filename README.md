@@ -5,26 +5,27 @@ puush-like functionality for pomf.se
 
 ![](http://a.pomf.se/avnmcn.png)
 
-usage
+Usage
 =====
 
--f for fullscreen capture, -s for a selection rectangle, and -u 'file' to upload a file
+`-f` for fullscreen capture, `-s` for a selection rectangle, and `-u <file>` to upload a file.
 
-for best results, bind each operation to a hotkey using sxhkd or xbindkeys
+For best results, bind each operation to a hotkey using `sxhkd` or `xbindkeys`.
 
-requirements
+Requirements
 ============
 
 - curl
 - libnotify (for notifications)
 - maim (for screenshot)
 - slop (for selection capture)
-- xclip (for auto-copy)
+- xclip (for clip-board support)
 
-
-credit
+Credit
 ======
 
-inspired by onodera-punpun's pomf.sh (https://github.com/onodera-punpun)
+Inspired by [onodera-punpun](https://github.com/onodera-punpun)'s pomf.sh
 
-upload functionality by kittykatt (https://github.com/KittyKatt)
+Original upload functionality by [KittyKatt](https://github.com/KittyKatt)
+
+**New** upload functionality and refactoring by [arianon](https://github.com/arianon)
