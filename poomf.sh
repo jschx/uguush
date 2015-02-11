@@ -31,7 +31,8 @@ function usage {
 	Options:
 	    -h         Show this help message.
 	    -f         Take a fullscreen screenshot.
-	    -g         Use uguu.se to upload. It keeps files for 30 minutes and has a 150MB max upload size.
+	    -g         Use uguu.se to upload.
+	               It keeps files for 30 minutes and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
 	    -u <file>  Upload a file
 	HELP
@@ -48,7 +49,7 @@ while getopts :fghsu: opt; do
 			maim $FILE ;;
 		g)
 			# Change mode to uguu
-			mode=1 ;;
+			uguu=1 ;;
 		s)
 			# Take shot with selection.
 			maim -s $FILE ;;
@@ -69,10 +70,10 @@ for (( i = 1; i <= 3; i++ )); do
 	echo -n "Try #${i} ... "
 
 	# Upload file to selected host
-	if [ -z $mode ]; then
-		pomf=$(curl -sf -F files[]="@$FILE" "http://pomf.se/upload.php?output=gyazo")
-	else
+	if [[ $uguu ]]; then
 		pomf=$(curl -sf -F file="@$FILE" "http://uguu.se/api.php?d=upload")
+	else
+		pomf=$(curl -sf -F files[]="@$FILE" "http://pomf.se/upload.php?output=gyazo")
 	fi
 
 	if (( $? == 0 )); then
