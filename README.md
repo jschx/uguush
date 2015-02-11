@@ -3,7 +3,7 @@ poomf.sh
 
 puush-like functionality for pomf.se
 
-![](http://a.pomf.se/avnmcn.png)
+![](http://a.pomf.se/knezlh.png)
 
 Usage
 =====
