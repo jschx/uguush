@@ -1,103 +1,92 @@
 #!/bin/bash
-
+#
+# created by JS1 - js1 at openmailbox dot org
+# refactored by arianon - arianon at openmailbox dot org
 # poomf.sh - puush-like functionality for pomf.se
 
 ## CONFIGURATION
 
-# colors
+# Colors
+N=$(tput sgr0)
+R=$(tput setaf 1)
+G=$(tput setaf 2)
 
-reset=$(tput sgr0)
-black=$(tput setaf 0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
-blue=$(tput setaf 4)
-magenta=$(tput setaf 5)
-cyan=$(tput setaf 6)
-white=$(tput setaf 7)
+# Default screenshot name.
+FILE="/tmp/screenshot.png"
 
-## OPTIONS
 
-# get options
-while getopts fhsu: option; do
-	case $option in
-		f)fullscreen=1;;
-		h)help=1;;
-		s)selection=1;;
-		u)upload=1;;
-		*)exit;;
+## FUNCTIONS
+function maim {
+	command maim --hidecursor $@
+	(( $? != 0 )) && exit 1
+}
+
+function usage {
+	cat <<-HELP
+	poomf.sh - puush-like functionality for pomf.se
+
+	Usage:
+	    $(basename $0) [options]
+
+	Options:
+	    -h         Show this help message.
+	    -f         Take a fullscreen screenshot.
+	    -s         Take a selection screenshot.
+	    -u <file>  Upload a file
+	HELP
+}
+
+## EXIT IF NO ARGUMENTS FOUND
+test -z $1 && { usage && exit 1; }
+
+## PARSE OPTIONS
+while getopts :fhsu: opt; do
+	case $opt in
+		f)
+			# Take shot.
+			maim $FILE ;;
+		s)
+			# Take shot with selection.
+			maim -s $FILE ;;
+		u)
+			# Change $FILE to the specified file with -u
+			FILE=$OPTARG ;;
+		h)
+			# Show help and exit with EXIT_SUCCESS
+			usage && exit 0 ;;
+		*)
+			# Ditto, but with EXIT_FAILURE
+			usage && exit 1 ;;
 	esac
 done
 
-# take fullscreen picture
-if [[ $fullscreen ]]; then
-	file=$(filename=/tmp/screenshot.png ; maim --hidecursor $filename ; printf $filename)
-fi
+## UPLOAD FILE
+for (( i = 1; i <= 3; i++ )); do
+	echo -n "Try #${i} ... "
 
-# display help
-if [[ $help ]]; then
-	printf "%s\t\t%s\n" "-f" "fullscreen"
-	printf "%s\t\t%s\n" "-h" "show this message"
-	printf "%s\t\t%s\n" "-s" "selection"
-	printf "%s\t\t%s\n" "-u file" "file upload"
-	exit
-fi
+	# Actual upload
+	pomf=$(curl -sf -F files[]="@$FILE" "http://pomf.se/upload.php?output=gyazo")
 
-# take selection picture
-if [[ $selection ]]; then
-	file=$(filename=/tmp/screenshot.png ; maim -s --hidecursor $filename ; printf $filename)
-fi
+	if (( $? == 0 )); then
 
-# get file
-if [[ $upload ]]; then
-	file=$(printf $2)
-fi
+		# Copy link to clipboard
+		echo -n $pomf | xclip -selection primary
+		echo -n $pomf | xclip -selection clipboard
 
-## UPLOADING
+		# Log url to file
+		echo "$(date +"%D %R") | $pomf" >> ~/.pomfs.txt
 
-# upload it and grab the url
-output=$(curl --silent -sf -F files[]="@$file" "http://pomf.se/upload.php")
+		# Notify user of completion
+		notify-send "pomf!" "$pomf"
 
-printf "%s\n" "uploading ${file}..."
-
-n=0
-while [[ $n -le 3 ]]; do
-	printf "$white try #${n}...$reset"
-	if [[ "${output}" =~ '"success":true,' ]]; then
-		if [[ ! -z $upload ]]; then
-			pomffile=$(printf $output | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')
-		else
-			pomffile=$(printf $output | grep -Eo '"url":"[A-Za-z0-9]+.png",' | sed 's/"url":"//;s/",//')
-		fi
-		printf "$green done.$reset\n"
-		success=1
-		break
+		# Output message to term
+		echo "[${G}OK${N}]"
+		echo "File has been uploaded: $pomf"
+		exit
 	else
-		printf "$red failed.$reset\n"
-		((n = n +1))
+		echo "[${R}FAILED${N}]"
 	fi
 done
 
-url=http://a.pomf.se/$pomffile
-
-# remove temporary file
-
-if [[ -z $upload ]]; then
-	rm -f $file
-fi
-
-## OUTPUT
-
-if [[ $success ]]; then
-	# copy link to clipboard
-	printf $url | xclip -selection primary
-	printf $url | xclip -selection clipboard
-	# log url to file
-	echo "$(date +"%D %H:%M:%S") | $url" >> ~/.pomfs.txt
-	# notify user of completion
-	notify-send "pomf!" "$url"
-	# output message to term
-	printf "%s\n" "file has been uploaded: $url"
-else
-	printf "%s\n" "file was not uploaded, did you specify a valid filename?"
-fi
+# If the program doesn't exit at the for-loop, the upload failed.
+echo "File was not uploaded, did you specify a valid filename?"
