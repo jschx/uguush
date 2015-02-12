@@ -23,7 +23,7 @@ function maim {
 
 function usage {
 	cat <<-HELP
-	poomf.sh - puush-like functionality for pomf.se
+	poomf.sh - puush-like functionality for pomf.se and uguu.se
 
 	Usage:
 	    $(basename $0) [options]
