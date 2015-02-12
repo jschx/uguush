@@ -1,7 +1,7 @@
 poomf.sh
 ========
 
-puush-like functionality for pomf.se
+puush-like functionality for pomf.se and uguu.se
 
 ![](http://a.pomf.se/knezlh.png)
 
@@ -9,6 +9,8 @@ Usage
 =====
 
 `-f` for fullscreen capture, `-s` for a selection rectangle, and `-u <file>` to upload a file.
+
+`-g` to use uguu.se rather than pomf. Files will only be kept for 30 minutes and there is a max upload size of 150MB.
 
 For best results, bind each operation to a hotkey using `sxhkd` or `xbindkeys`.
 
@@ -23,6 +25,8 @@ Requirements
 
 Credit
 ======
+
+Big thanks to [neku](https://github.com/nokonoko) for creating pomf and uguu!
 
 Inspired by [onodera-punpun](https://github.com/onodera-punpun)'s pomf.sh
 
