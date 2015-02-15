@@ -10,7 +10,7 @@ Usage
 
 `-f` for fullscreen capture, `-s` for a selection rectangle, and `-u <file>` to upload a file.
 
-`-g` to use uguu.se rather than pomf. Files will only be kept for 30 minutes and there is a max upload size of 150MB.
+`-g` to use uguu.se rather than pomf. Files will be kept for one hour and there is a max upload size of 150MB.
 
 For best results, bind each operation to a hotkey using `sxhkd` or `xbindkeys`.
 
@@ -28,8 +28,8 @@ Credit
 
 Big thanks to [neku](https://github.com/nokonoko) for creating pomf and uguu!
 
-Inspired by [onodera-punpun](https://github.com/onodera-punpun)'s pomf.sh
+Inspired by [onodera-punpun](https://github.com/onodera-punpun)'s pomf.sh.
 
-Original upload functionality by [KittyKatt](https://github.com/KittyKatt)
+Original upload functionality by [KittyKatt](https://github.com/KittyKatt).
 
-**New** upload functionality and refactoring by [arianon](https://github.com/arianon)
+**New** upload functionality and refactoring by [arianon](https://github.com/arianon).
