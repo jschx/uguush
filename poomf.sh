@@ -1,8 +1,10 @@
 #!/bin/bash
 #
-# created by JS1 - js1 at openmailbox dot org
-# refactored by arianon - arianon at openmailbox dot org
 # poomf.sh - puush-like functionality for pomf.se and uguu.se
+#
+
+# by joe - js1 at openmailbox dot org
+# refactored by arianon - arianon at openmailbox dot org
 
 ## CONFIGURATION
 
@@ -32,7 +34,7 @@ function usage {
 	    -h         Show this help message.
 	    -f         Take a fullscreen screenshot.
 	    -g         Use uguu.se to upload.
-	               It keeps files for 30 minutes and has a 150MB max upload size.
+	               It keeps files for one hour and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
 	    -u <file>  Upload a file
 	HELP
