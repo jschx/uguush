@@ -20,7 +20,7 @@ FILE="/tmp/screenshot.png"
 ## FUNCTIONS
 function maim {
 	command maim --hidecursor $@
-	(( $? != 0 )) && exit 1
+	(( "$?" != 0 )) && exit 1
 }
 
 function usage {
@@ -48,16 +48,16 @@ while getopts :fghsu: opt; do
 	case $opt in
 		f)
 			# Take shot.
-			maim $FILE ;;
+			maim "$FILE" ;;
 		g)
 			# Change mode to uguu
 			uguu=1 ;;
 		s)
 			# Take shot with selection.
-			maim -s $FILE ;;
+			maim -s "$FILE" ;;
 		u)
 			# Change $FILE to the specified file with -u
-			FILE=$OPTARG ;;
+			FILE="$OPTARG" ;;
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage && exit 0 ;;
@@ -72,17 +72,17 @@ for (( i = 1; i <= 3; i++ )); do
 	echo -n "Try #${i} ... "
 
 	# Upload file to selected host
-	if [[ $uguu ]]; then
+	if [[ "$uguu" ]]; then
 		pomf=$(curl -sf -F file="@$FILE" "http://uguu.se/api.php?d=upload")
 	else
 		pomf=$(curl -sf -F files[]="@$FILE" "http://pomf.se/upload.php?output=gyazo")
 	fi
 
-	if (( $? == 0 )); then
+	if (( "$?" == 0 )); then
 
 		# Copy link to clipboard
-		echo -n $pomf | xclip -selection primary
-		echo -n $pomf | xclip -selection clipboard
+		echo -n "$pomf" | xclip -selection primary
+		echo -n "$pomf" | xclip -selection clipboard
 
 		# Log url to file
 		echo "$(date +"%D %R") | $pomf" >> ~/.pomfs.txt
