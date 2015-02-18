@@ -13,6 +13,10 @@ N=$(tput sgr0)
 R=$(tput setaf 1)
 G=$(tput setaf 2)
 
+# Screenshot utility
+fscreen='maim --hidecursor'	# command for fullscreen capture
+sscreen='maim -s --hidecursor'	# command for selection capture
+
 # Default screenshot name.
 FILE='/tmp/screenshot.png'
 
@@ -24,11 +28,6 @@ function depends {
 		echo "\`curl\` not found."
 		exit 1
 	fi
-}
-
-function maim {
-	command maim --hidecursor "${@}"
-	(( "${?}" != 0 )) && exit 1
 }
 
 function usage {
@@ -61,13 +60,13 @@ while getopts :fghsu: opt; do
 	case "${opt}" in
 		f)
 			# Take shot.
-			maim "${FILE}" ;;
+			${fscreen} "${FILE}" ;;
 		g)
 			# Change mode to uguu
 			uguu=1 ;;
 		s)
 			# Take shot with selection.
-			maim -s "${FILE}" ;;
+			${sscreen} "${FILE}" ;;
 		u)
 			# Change $FILE to the specified file with -u
 			FILE="${OPTARG}" ;;
