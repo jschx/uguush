@@ -23,6 +23,12 @@ Requirements
 - slop (for selection capture)
 - xclip (for clip-board support)
 
+Todo
+====
+
+Add support for more hosts. Teknik, maybe imgur?
+Add support for different screenshot utilities. maim still rocks!
+
 Credit
 ======
 
