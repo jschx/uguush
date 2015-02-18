@@ -18,6 +18,14 @@ FILE='/tmp/screenshot.png'
 
 
 ## FUNCTIONS
+function depends {
+	if ! command -v curl &> /dev/null; then
+		echo >&2 "Checking for curl... [${R}FAILED${N}]"
+		echo "\`curl\` not found."
+		exit 1
+	fi
+}
+
 function maim {
 	command maim --hidecursor "${@}"
 	(( "${?}" != 0 )) && exit 1
@@ -45,6 +53,8 @@ if [[ -z "${1}" ]]; then
 	usage
 	exit 1
 fi
+
+depends
 
 ## PARSE OPTIONS
 while getopts :fghsu: opt; do
