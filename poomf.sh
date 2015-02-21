@@ -87,7 +87,7 @@ for (( i = 1; i <= 3; i++ )); do
 	if [[ "${uguu}" ]]; then
 		pomf=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
 	else
-		pomf=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
+		pomf=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
 	fi
 
 	if (( "${?}" == 0 )); then
