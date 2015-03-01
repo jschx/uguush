@@ -14,8 +14,8 @@ R=$(tput setaf 1)
 G=$(tput setaf 2)
 
 # Screenshot utility
-fscreen='maim --hidecursor'	# command for fullscreen capture
-sscreen='maim -s --hidecursor'	# command for selection capture
+fscreen='maim --hidecursor'
+sscreen='maim -s --hidecursor'
 
 # Default screenshot name.
 FILE='/tmp/screenshot.png'
@@ -43,6 +43,7 @@ function usage {
 	    -g         Use uguu.se to upload.
 	               It keeps files for one hour and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
+	    -t         Use HTTPS, if the host supports it.
 	    -u <file>  Upload a file
 	HELP
 }
@@ -56,7 +57,7 @@ fi
 depends
 
 ## PARSE OPTIONS
-while getopts :fghsu: opt; do
+while getopts :fghstu: opt; do
 	case "${opt}" in
 		f)
 			# Take shot.
@@ -67,6 +68,9 @@ while getopts :fghsu: opt; do
 		s)
 			# Take shot with selection.
 			${sscreen} "${FILE}" ;;
+		t)
+			# Use HTTPS
+			https=true ;;
 		u)
 			# Change $FILE to the specified file with -u
 			FILE="${OPTARG}" ;;
@@ -85,11 +89,20 @@ for (( i = 1; i <= 3; i++ )); do
 
 	# Upload file to selected host
 	if [[ "${uguu}" ]]; then
-		pomf=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
+		if [[ "${https}" ]]; then
+			echo "[${R}FAILED${N}]"
+			echo "Uguu.se doesn't support HTTPS yet."
+			exit 1
+		else
+			pomf=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
+		fi
 	else
-		pomf=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
+		if [[ "${https}" ]]; then
+			pomf=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
+		else
+			pomf=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
+		fi
 	fi
-
 	if (( "${?}" == 0 )); then
 
 		# Copy link to clipboard
