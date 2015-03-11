@@ -1,7 +1,7 @@
 poomf.sh
 ========
 
-puush-like functionality for pomf.se and uguu.se
+command-line uploader for pomf.se and uguu.se
 
 ![](http://a.pomf.se/knezlh.png)
 

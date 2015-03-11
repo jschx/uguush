@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# poomf.sh - puush-like functionality for pomf.se and uguu.se
+# poomf.sh - command-line uploader for pomf.se and uguu.se
 #
 
 # by joe - js1 at openmailbox dot org
