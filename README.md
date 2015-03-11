@@ -8,7 +8,7 @@ puush-like functionality for pomf.se and uguu.se
 Usage
 =====
 
-`-f` for fullscreen capture, `-s` for a selection rectangle, and `-u <file>` to upload a file.
+`-f` for fullscreen capture, `-s` for a selection rectangle,  `-w` for current window capture, and `-u <file>` to upload a file.
 
 `-g` to use uguu.se rather than pomf. Files will be kept for one hour and there is a max upload size of 150MB.
 
@@ -22,13 +22,12 @@ Requirements
 - maim (for screenshot)
 - slop (for selection capture)
 - xclip (for clip-board support)
+- xprop (for current window capture)
 
 Todo
 ====
 
 Add support for more hosts. Teknik, maybe imgur?
-
-Add support for different screenshot utilities. maim still rocks!
 
 Credit
 ======

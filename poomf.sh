@@ -14,8 +14,9 @@ R=$(tput setaf 1)
 G=$(tput setaf 2)
 
 # Screenshot utility
-fscreen='maim --hidecursor'
-sscreen='maim -s --hidecursor'
+fscreen="maim --hidecursor"
+sscreen="maim -s --hidecursor"
+wscreen="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*')"
 
 # Default screenshot name.
 FILE='/tmp/screenshot.png'
@@ -45,6 +46,7 @@ function usage {
 	    -s         Take a selection screenshot.
 	    -t         Use HTTPS, if the host supports it.
 	    -u <file>  Upload a file
+	    -w         Take a screenshot of the current window.
 	HELP
 }
 
@@ -57,14 +59,14 @@ fi
 depends
 
 ## PARSE OPTIONS
-while getopts :fghstu: opt; do
+while getopts :fghstu:w opt; do
 	case "${opt}" in
 		f)
 			# Take shot.
 			${fscreen} "${FILE}" ;;
 		g)
 			# Change mode to uguu
-			uguu=1 ;;
+			uguu=true ;;
 		s)
 			# Take shot with selection.
 			${sscreen} "${FILE}" ;;
@@ -74,6 +76,9 @@ while getopts :fghstu: opt; do
 		u)
 			# Change $FILE to the specified file with -u
 			FILE="${OPTARG}" ;;
+		w)
+			# Take shot of current window.
+			${wscreen} "${FILE}" ;;
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage && exit 0 ;;
