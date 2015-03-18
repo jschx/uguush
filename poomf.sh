@@ -24,7 +24,7 @@ FILE='/tmp/screenshot.png'
 
 ## FUNCTIONS
 function depends {
-	if ! command -v curl &> /dev/null; then
+	if ! type curl &> /dev/null; then
 		echo >&2 "Checking for curl... [${R}FAILED${N}]"
 		echo "\`curl\` not found."
 		exit 1
@@ -51,7 +51,7 @@ function usage {
 }
 
 ## EXIT IF NO ARGUMENTS FOUND
-if [[ -z "${1}" ]]; then
+if (( $# < 1 )); then
 	usage
 	exit 1
 fi
@@ -81,10 +81,12 @@ while getopts :fghstu:w opt; do
 			${wscreen} "${FILE}" ;;
 		h)
 			# Show help and exit with EXIT_SUCCESS
-			usage && exit 0 ;;
+			usage
+			exit 0 ;;
 		*)
 			# Ditto, but with EXIT_FAILURE
-			usage && exit 1 ;;
+			usage
+			exit 1 ;;
 	esac
 done
 
@@ -111,8 +113,8 @@ for (( i = 1; i <= 3; i++ )); do
 	if (( "${?}" == 0 )); then
 
 		# Copy link to clipboard
-		echo -n "${pomf}" | xclip -selection primary
-		echo -n "${pomf}" | xclip -selection clipboard
+		xclip -selection primary <<< "${pomf}"
+		xclip -selection clipboard <<< "${pomf}"
 
 		# Log url to file
 		echo "$(date +"%D %R") | ${pomf}" >> ~/.pomfs.txt
