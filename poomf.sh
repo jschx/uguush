@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 #
 # poomf.sh - command-line uploader for pomf.se and uguu.se
 #
@@ -14,15 +14,18 @@ R=$(tput setaf 1)
 G=$(tput setaf 2)
 
 # Screenshot utility
-fscreen="maim --hidecursor"
-sscreen="maim -s --hidecursor"
-wscreen="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*')"
+fshot="maim --hidecursor"
+sshot="maim -s --hidecursor"
+wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*')"
 
 # Default screenshot name.
 FILE='/tmp/screenshot.png'
 
+# Default delay.
+secs="0"
 
 ## FUNCTIONS
+
 function depends {
 	if ! type curl &> /dev/null; then
 		echo >&2 "Checking for curl... [${R}FAILED${N}]"
@@ -39,6 +42,7 @@ function usage {
 	    $(basename "${0}") [options]
 
 	Options:
+	    -d         Delay the screenshot by the specified number of seconds.
 	    -h         Show this help message.
 	    -f         Take a fullscreen screenshot.
 	    -g         Use uguu.se to upload.
@@ -50,26 +54,86 @@ function usage {
 	HELP
 }
 
+function delay {
+	sleep ${secs}
+}
+
+function screenshot {
+	if [[ "${ful}" ]]; then
+		# Take fullscreen shot.
+		${fshot} "${FILE}"
+	elif [[ "${sel}" ]]; then
+		# Take selection shot.
+		${sshot} "${FILE}"
+	elif [[ "${win}" ]]; then
+		# Take window shot.
+		${wshot} "${FILE}"
+	fi
+}
+
+function upload {
+	for (( i = 1; i <= 3; i++ )); do
+		echo -n "Try #${i}... "
+
+		# Upload file to selected host
+		if [[ "${uguu}" ]]; then
+			if [[ "${https}" ]]; then
+				echo "[${R}FAILED${N}]"
+				echo "Uguu.se doesn't support HTTPS yet."
+				exit 1
+			else
+				pomf=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
+			fi
+		else
+			if [[ "${https}" ]]; then
+				pomf=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
+			else
+				pomf=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
+			fi
+		fi
+		if (( "${?}" == 0 )); then
+
+			# Copy link to clipboard
+			xclip -selection primary <<< "${pomf}"
+			xclip -selection clipboard <<< "${pomf}"
+
+			# Log url to file
+			echo "$(date +"%D %R") | ${pomf}" >> ~/.pomfs.txt
+
+			# Notify user of completion
+			notify-send "pomf!" "${pomf}"
+
+			# Output message to term
+			echo "[${G}OK${N}]"
+			echo "File has been uploaded: ${pomf}"
+			exit
+		else
+			echo "[${R}FAILED${N}]"
+		fi
+	done
+}
+
 ## EXIT IF NO ARGUMENTS FOUND
 if (( $# < 1 )); then
 	usage
 	exit 1
 fi
 
-depends
-
 ## PARSE OPTIONS
-while getopts :fghstu:w opt; do
+while getopts :d:fghstu:w opt; do
 	case "${opt}" in
-		f)
-			# Take shot.
-			${fscreen} "${FILE}" ;;
+		d)
+			# Set delay value.
+			secs="${OPTARG}" ;;
+                f)
+			# Fullscreen.
+			ful=1 ;;
 		g)
 			# Change mode to uguu
 			uguu=true ;;
 		s)
 			# Take shot with selection.
-			${sscreen} "${FILE}" ;;
+			sel=1 ;;
 		t)
 			# Use HTTPS
 			https=true ;;
@@ -78,7 +142,7 @@ while getopts :fghstu:w opt; do
 			FILE="${OPTARG}" ;;
 		w)
 			# Take shot of current window.
-			${wscreen} "${FILE}" ;;
+                        win=1 ;;
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage
@@ -90,46 +154,12 @@ while getopts :fghstu:w opt; do
 	esac
 done
 
-## UPLOAD FILE
-for (( i = 1; i <= 3; i++ )); do
-	echo -n "Try #${i}... "
+## EXECUTE FUNCTIONS
 
-	# Upload file to selected host
-	if [[ "${uguu}" ]]; then
-		if [[ "${https}" ]]; then
-			echo "[${R}FAILED${N}]"
-			echo "Uguu.se doesn't support HTTPS yet."
-			exit 1
-		else
-			pomf=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
-		fi
-	else
-		if [[ "${https}" ]]; then
-			pomf=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
-		else
-			pomf=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
-		fi
-	fi
-	if (( "${?}" == 0 )); then
-
-		# Copy link to clipboard
-		xclip -selection primary <<< "${pomf}"
-		xclip -selection clipboard <<< "${pomf}"
-
-		# Log url to file
-		echo "$(date +"%D %R") | ${pomf}" >> ~/.pomfs.txt
-
-		# Notify user of completion
-		notify-send "pomf!" "${pomf}"
-
-		# Output message to term
-		echo "[${G}OK${N}]"
-		echo "File has been uploaded: ${pomf}"
-		exit
-	else
-		echo "[${R}FAILED${N}]"
-	fi
-done
+depends
+delay
+screenshot
+upload
 
 # If the program doesn't exit at the for-loop, the upload failed.
 echo "File was not uploaded, did you specify a valid filename?"
