@@ -55,8 +55,8 @@ function usage {
 }
 
 function delay {
-	for (( i=delay; i > 0; --i )) ; do
-		echo -n "$i.."
+	for (( i=secs; i > 0; --i )) ; do
+		echo "$i..."
 		sleep 1
 	done
 }
