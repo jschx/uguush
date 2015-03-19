@@ -8,11 +8,25 @@ command-line uploader for pomf.se and uguu.se
 Usage
 =====
 
-`-f` for fullscreen capture, `-s` for a selection rectangle,  `-w` for current window capture, and `-u <file>` to upload a file.
+  poomf.sh [options]
+  
+Options:
 
-`-g` to use uguu.se rather than pomf. Files will be kept for one hour and there is a max upload size of 150MB.
+`-d` Delay the screenshot by the specified number of seconds.
 
-For best results, bind each operation to a hotkey using `sxhkd` or `xbindkeys`.
+`-h` Show this help message.
+
+`-f` Take a fullscreen screenshot.
+
+`-g` Use uguu.se to upload. It keeps files for one hour and has a 150MB max upload size.
+  
+`-s` Take a selection screenshot.
+
+`-t` Use HTTPS, if the host supports it.
+
+`-u` <file> Upload a file.
+
+`-w` Take a screenshot of the current window.
 
 Requirements
 ============
@@ -39,3 +53,5 @@ Inspired by [onodera-punpun](https://github.com/onodera-punpun)'s pomf.sh.
 Original upload functionality by [KittyKatt](https://github.com/KittyKatt).
 
 **New** upload functionality and refactoring by [arianon](https://github.com/arianon).
+
+Various features and help from [DanielFGray](https://github.com/DanielFGray).
