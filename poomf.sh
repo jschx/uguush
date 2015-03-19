@@ -26,7 +26,7 @@ secs="0"
 
 ## FUNCTIONS
 
-function depends {
+depends() {
 	if ! type curl &> /dev/null; then
 		echo >&2 "Checking for curl... [${R}FAILED${N}]"
 		echo "\`curl\` not found."
@@ -34,7 +34,7 @@ function depends {
 	fi
 }
 
-function usage {
+usage() {
 	cat <<-HELP
 	poomf.sh - puush-like functionality for pomf.se and uguu.se
 
@@ -54,14 +54,14 @@ function usage {
 	HELP
 }
 
-function delay {
+delay() {
 	for (( i=secs; i > 0; --i )) ; do
 		echo "$i..."
 		sleep 1
 	done
 }
 
-function screenshot {
+screenshot() {
 	if [[ "${ful}" ]]; then
 		# Take fullscreen shot.
 		${fshot} "${FILE}"
@@ -74,7 +74,7 @@ function screenshot {
 	fi
 }
 
-function upload {
+upload() {
 	for (( i = 1; i <= 3; i++ )); do
 		echo -n "Try #${i}... "
 
@@ -128,15 +128,15 @@ while getopts :d:fghstu:w opt; do
 		d)
 			# Set delay value.
 			secs="${OPTARG}" ;;
-                f)
+		f)
 			# Fullscreen.
-			ful=1 ;;
+			ful=true ;;
 		g)
 			# Change mode to uguu
 			uguu=true ;;
 		s)
 			# Take shot with selection.
-			sel=1 ;;
+			sel=true ;;
 		t)
 			# Use HTTPS
 			https=true ;;
@@ -145,7 +145,7 @@ while getopts :d:fghstu:w opt; do
 			FILE="${OPTARG}" ;;
 		w)
 			# Take shot of current window.
-                        win=1 ;;
+                        win=true ;;
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage
