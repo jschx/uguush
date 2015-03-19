@@ -55,7 +55,10 @@ function usage {
 }
 
 function delay {
-	sleep ${secs}
+	for (( i=delay; i > 0; --i )) ; do
+		echo -n "$i.."
+		sleep 1
+	done
 }
 
 function screenshot {
