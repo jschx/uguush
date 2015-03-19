@@ -18,10 +18,10 @@ fshot="maim --hidecursor"
 sshot="maim -s --hidecursor"
 wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*')"
 
-# Default screenshot name.
-FILE='/tmp/screenshot.png'
+# Default screenshot name
+FILE="/tmp/screenshot.png"
 
-# Default delay.
+# Default delay
 secs="0"
 
 ## FUNCTIONS
@@ -49,7 +49,7 @@ usage() {
 	               It keeps files for one hour and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
 	    -t         Use HTTPS, if the host supports it.
-	    -u <file>  Upload a file
+	    -u <file>  Upload a file.
 	    -w         Take a screenshot of the current window.
 	HELP
 }
@@ -63,13 +63,13 @@ delay() {
 
 screenshot() {
 	if [[ "${ful}" ]]; then
-		# Take fullscreen shot.
+		# Take fullscreen shot
 		${fshot} "${FILE}"
 	elif [[ "${sel}" ]]; then
-		# Take selection shot.
+		# Take selection shot
 		${sshot} "${FILE}"
 	elif [[ "${win}" ]]; then
-		# Take window shot.
+		# Take window shot
 		${wshot} "${FILE}"
 	fi
 }
@@ -126,16 +126,16 @@ fi
 while getopts :d:fghstu:w opt; do
 	case "${opt}" in
 		d)
-			# Set delay value.
+			# Set delay value
 			secs="${OPTARG}" ;;
 		f)
-			# Fullscreen.
+			# Fullscreen
 			ful=true ;;
 		g)
 			# Change mode to uguu
 			uguu=true ;;
 		s)
-			# Take shot with selection.
+			# Selection
 			sel=true ;;
 		t)
 			# Use HTTPS
@@ -144,8 +144,8 @@ while getopts :d:fghstu:w opt; do
 			# Change $FILE to the specified file with -u
 			FILE="${OPTARG}" ;;
 		w)
-			# Take shot of current window.
-                        win=true ;;
+			# Window
+			win=true ;;
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage
@@ -158,7 +158,6 @@ while getopts :d:fghstu:w opt; do
 done
 
 ## EXECUTE FUNCTIONS
-
 depends
 delay
 screenshot
