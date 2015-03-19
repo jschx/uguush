@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #
 # poomf.sh - command-line uploader for pomf.se and uguu.se
 #
