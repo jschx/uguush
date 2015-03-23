@@ -16,12 +16,12 @@ G=$(tput setaf 2)
 # Screenshot utility
 fshot="maim --hidecursor"
 sshot="maim -s --hidecursor"
-wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*')"
+wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') --hidecursor"
 
-# Default screenshot name
-FILE="/tmp/screenshot.png"
+# Default screenshot name.
+FILE='/tmp/screenshot.png'
 
-# Default delay
+# Default delay.
 secs="0"
 
 ## FUNCTIONS
@@ -49,7 +49,7 @@ usage() {
 	               It keeps files for one hour and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
 	    -t         Use HTTPS, if the host supports it.
-	    -u <file>  Upload a file.
+	    -u <file>  Upload a file
 	    -w         Take a screenshot of the current window.
 	HELP
 }
@@ -62,14 +62,14 @@ delay() {
 }
 
 screenshot() {
-	if [[ "${ful}" ]]; then
-		# Take fullscreen shot
+	if [ "${ful}" ]; then
+		# Take fullscreen shot.
 		${fshot} "${FILE}"
-	elif [[ "${sel}" ]]; then
-		# Take selection shot
+	elif [ "${sel}" ]; then
+		# Take selection shot.
 		${sshot} "${FILE}"
-	elif [[ "${win}" ]]; then
-		# Take window shot
+	elif [ "${win}" ]; then
+		# Take window shot.
 		${wshot} "${FILE}"
 	fi
 }
@@ -79,8 +79,8 @@ upload() {
 		echo -n "Try #${i}... "
 
 		# Upload file to selected host
-		if [[ "${uguu}" ]]; then
-			if [[ "${https}" ]]; then
+		if [ "${uguu}" ]; then
+			if [ "${https}" ]; then
 				echo "[${R}FAILED${N}]"
 				echo "Uguu.se doesn't support HTTPS yet."
 				exit 1
@@ -88,13 +88,13 @@ upload() {
 				pomf=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
 			fi
 		else
-			if [[ "${https}" ]]; then
+			if [ "${https}" ]; then
 				pomf=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
 			else
 				pomf=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
 			fi
 		fi
-		if (( "${?}" == 0 )); then
+		if [ "${?}" = 0 ]; then
 
 			# Copy link to clipboard
 			xclip -selection primary <<< "${pomf}"
@@ -117,7 +117,7 @@ upload() {
 }
 
 ## EXIT IF NO ARGUMENTS FOUND
-if (( $# < 1 )); then
+if [ $# -lt 1 ]; then
 	usage
 	exit 1
 fi
@@ -126,16 +126,16 @@ fi
 while getopts :d:fghstu:w opt; do
 	case "${opt}" in
 		d)
-			# Set delay value
+			# Set delay value.
 			secs="${OPTARG}" ;;
 		f)
-			# Fullscreen
+			# Fullscreen.
 			ful=true ;;
 		g)
 			# Change mode to uguu
 			uguu=true ;;
 		s)
-			# Selection
+			# Take shot with selection.
 			sel=true ;;
 		t)
 			# Use HTTPS
@@ -144,8 +144,8 @@ while getopts :d:fghstu:w opt; do
 			# Change $FILE to the specified file with -u
 			FILE="${OPTARG}" ;;
 		w)
-			# Window
-			win=true ;;
+			# Take shot of current window.
+                        win=true ;;
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage
@@ -158,6 +158,7 @@ while getopts :d:fghstu:w opt; do
 done
 
 ## EXECUTE FUNCTIONS
+
 depends
 delay
 screenshot
