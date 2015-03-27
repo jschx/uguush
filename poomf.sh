@@ -19,7 +19,7 @@ sshot="maim -s --hidecursor"
 wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') --hidecursor"
 
 # Default screenshot name.
-FILE='/tmp/screenshot.png'
+FILE=$(mktemp --suffix=.png)
 
 # Default delay.
 secs="0"
@@ -109,6 +109,12 @@ upload() {
 			# Output message to term
 			echo "[${G}OK${N}]"
 			echo "File has been uploaded: ${pomf}"
+
+			# If we took a screenshot, remove the temporary file.
+			if [ -z $upl ]; then
+				rm $FILE
+			fi
+
 			exit
 		else
 			echo "[${R}FAILED${N}]"
@@ -142,7 +148,8 @@ while getopts :d:fghstu:w opt; do
 			https=true ;;
 		u)
 			# Change $FILE to the specified file with -u
-			FILE="${OPTARG}" ;;
+			upl=true
+                        FILE="${OPTARG}" ;;
 		w)
 			# Take shot of current window.
                         win=true ;;
