@@ -97,8 +97,8 @@ upload() {
 		if [ "${?}" = 0 ]; then
 
 			# Copy link to clipboard
-			xclip -selection primary <<< "${pomf}"
-			xclip -selection clipboard <<< "${pomf}"
+			printf %s "${pomf}" | xclip -selection primary
+			printf %s "${pomf}" | xclip -selection clipboard
 
 			# Log url to file
 			echo "$(date +"%D %R") | ${pomf}" >> ~/.pomfs.txt
