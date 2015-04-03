@@ -1,11 +1,11 @@
-# poomf.sh window
+# poomf window
 ctrl + shift + 2
-	poomf.sh -w
+	poomf -w
 
-# poomf.sh fullscreen
+# poomf fullscreen
 ctrl + shift + 3
-	poomf.sh -f
+	poomf -f
 
-# poomf.sh selection
+# poomf selection
 ctrl + shift + @4
-	poomf.sh -s
+	poomf -s

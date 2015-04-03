@@ -1,14 +1,14 @@
-poomf.sh
+poomf
 ========
 
 command-line uploader for pomf.se and uguu.se
 
-![](http://a.pomf.se/knezlh.png)
+![](http://a.pomf.se/ooiyev.png)
 
 Usage
 =====
 
-  poomf.sh [options]
+  poomf [options]
   
 Options:
 
@@ -18,7 +18,7 @@ Options:
 
 `-f` Take a fullscreen screenshot.
 
-`-g` Use uguu.se to upload. It keeps files for one hour and has a 150MB max upload size.
+`-g` Use uguu.se to upload. It keeps files for 24 hours and has a 150MB max upload size.
   
 `-s` Take a selection screenshot.
 
