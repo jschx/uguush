@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# poomf.sh - command-line uploader for pomf.se and uguu.se
+# poomf - command-line uploader for pomf.se and uguu.se
 #
 
 # by joe - js1 at openmailbox dot org
@@ -36,7 +36,7 @@ depends() {
 
 usage() {
 	cat <<-HELP
-	poomf.sh - puush-like functionality for pomf.se and uguu.se
+	poomf - puush-like functionality for pomf.se and uguu.se
 
 	Usage:
 	    $(basename "${0}") [options]
@@ -46,7 +46,7 @@ usage() {
 	    -h         Show this help message.
 	    -f         Take a fullscreen screenshot.
 	    -g         Use uguu.se to upload.
-	               It keeps files for one hour and has a 150MB max upload size.
+	               It keeps files for 24 hours and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
 	    -t         Use HTTPS, if the host supports it.
 	    -u <file>  Upload a file
