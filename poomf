@@ -24,6 +24,10 @@ FILE=$(mktemp --suffix=.png)
 # Default delay.
 secs="0"
 
+# Image host
+ihost=pomf
+hosts="pomg uguu teknik imgur"
+
 ## FUNCTIONS
 
 depends() {
@@ -45,12 +49,11 @@ usage() {
 	    -d         Delay the screenshot by the specified number of seconds.
 	    -h         Show this help message.
 	    -f         Take a fullscreen screenshot.
-	    -g         Use uguu.se to upload.
-	               It keeps files for 24 hours and has a 150MB max upload size.
 	    -s         Take a selection screenshot.
 	    -t         Use HTTPS, if the host supports it.
 	    -u <file>  Upload a file
 	    -w         Take a screenshot of the current window.
+        -i         Image host(pomf/uguu/teknik/imgur). If unspecified, pomf.
 	HELP
 }
 
@@ -79,36 +82,23 @@ upload() {
 		echo -n "Try #${i}... "
 
 		# Upload file to selected host
-		if [ "${uguu}" ]; then
-			if [ "${https}" ]; then
-				echo "[${R}FAILED${N}]"
-				echo "Uguu.se doesn't support HTTPS yet."
-				exit 1
-			else
-				pomf=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
-			fi
-		else
-			if [ "${https}" ]; then
-				pomf=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
-			else
-				pomf=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
-			fi
-		fi
-		if [ "${?}" = 0 ]; then
+        $ihost
+
+		if [ ! -z "result" ]; then
 
 			# Copy link to clipboard
-			printf %s "${pomf}" | xclip -selection primary
-			printf %s "${pomf}" | xclip -selection clipboard
+			printf %s "${result}" | xclip -selection primary
+			printf %s "${result}" | xclip -selection clipboard
 
 			# Log url to file
-			echo "$(date +"%D %R") | ${pomf}" >> ~/.pomfs.txt
+			echo "$(date +"%D %R") | ${result}" >> ~/.pomfs.txt
 
 			# Notify user of completion
-			notify-send "pomf!" "${pomf}"
+			notify-send "pomf!" "${result}"
 
 			# Output message to term
 			echo "[${G}OK${N}]"
-			echo "File has been uploaded: ${pomf}"
+			echo "File has been uploaded: ${result}"
 
 			# If we took a screenshot, remove the temporary file.
 			if [ -z $upl ]; then
@@ -122,6 +112,32 @@ upload() {
 	done
 }
 
+pomf() {
+    if [ "${https}" ]; then
+        result=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
+    else
+        result=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
+    fi
+}
+
+uguu() {
+    if [ "${https}" ]; then
+        echo "[${R}FAILED${N}]"
+        echo "Uguu.se doesn't support HTTPS yet."
+        exit 1
+    else
+        result=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
+    fi
+}
+
+#teknik() {
+
+#}
+
+#imgur() {
+
+#}
+
 ## EXIT IF NO ARGUMENTS FOUND
 if [ $# -lt 1 ]; then
 	usage
@@ -129,7 +145,7 @@ if [ $# -lt 1 ]; then
 fi
 
 ## PARSE OPTIONS
-while getopts :d:fghstu:w opt; do
+while getopts :d:fghstui:w opt; do
 	case "${opt}" in
 		d)
 			# Set delay value.
@@ -137,9 +153,6 @@ while getopts :d:fghstu:w opt; do
 		f)
 			# Fullscreen.
 			ful=true ;;
-		g)
-			# Change mode to uguu
-			uguu=true ;;
 		s)
 			# Take shot with selection.
 			sel=true ;;
@@ -153,6 +166,10 @@ while getopts :d:fghstu:w opt; do
 		w)
 			# Take shot of current window.
                         win=true ;;
+        i)
+            #Set host
+            [[ "$hosts" =~ "${OPTARG}" ]] && ihost=${OPTARG} || exit 1 ;;
+
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage
