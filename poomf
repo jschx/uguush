@@ -25,7 +25,7 @@ FILE=$(mktemp --suffix=.png)
 secs="0"
 
 # Image host
-usehost=pomf
+usehost="pomf"
 hosts="pomf uguu teknik"
 
 ## FUNCTIONS
@@ -40,7 +40,7 @@ depends() {
 
 usage() {
 	cat <<-HELP
-	poomf - puush-like functionality for pomf.se and uguu.se
+	poomf - puush-like functionality for pomf.se, uguu.se, and teknik.io
 
 	Usage:
 		$(basename "${0}") [options]
@@ -77,41 +77,6 @@ screenshot() {
 	fi
 }
 
-upload() {
-	for (( i = 1; i <= 3; i++ )); do
-		printf %s "Try #${i}... "
-
-		# Upload file to selected host
-		$usehost
-
-		if [ "${?}" = 0 ]; then
-
-			# Copy link to clipboard
-			printf %s "${result}" | xclip -selection primary
-			printf %s "${result}" | xclip -selection clipboard
-
-			# Log url to file
-			echo "$(date +"%D %R") | ${result}" >> ~/.pomfs.txt
-
-			# Notify user of completion
-			notify-send "pomf!" "${result}"
-
-			# Output message to term
-			echo "[${G}OK${N}]"
-			echo "File has been uploaded: ${result}"
-
-			# If we took a screenshot, remove the temporary file
-			if [ -z "${upl}" ]; then
-				rm "${FILE}"
-			fi
-
-			exit
-		else
-			echo "[${R}FAILED${N}]"
-		fi
-	done
-}
-
 pomf() {
 	if [ "${https}" ]; then
 		result=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
@@ -144,6 +109,41 @@ teknik() {
 		result="${result%%\"*}"
 		result="https://u.teknik.io/${result}"
 	fi
+}
+
+upload() {
+	for (( i = 1; i <= 3; i++ )); do
+		printf %s "Try #${i}... "
+
+		# Upload file to selected host
+		${usehost}
+
+		if [ "${?}" = 0 ]; then
+
+			# Copy link to clipboard
+			printf %s "${result}" | xclip -selection primary
+			printf %s "${result}" | xclip -selection clipboard
+
+			# Log url to file
+			echo "$(date +"%D %R") | ${result}" >> ~/.pomfs.txt
+
+			# Notify user of completion
+			notify-send "pomf!" "${result}"
+
+			# Output message to term
+			echo "[${G}OK${N}]"
+			echo "File has been uploaded: ${result}"
+
+			# If we took a screenshot, remove the temporary file
+			if [ -z "${upl}" ]; then
+				rm "${FILE}"
+			fi
+
+			exit
+		else
+			echo "[${R}FAILED${N}]"
+		fi
+	done
 }
 
 ## EXIT IF NO ARGUMENTS FOUND
