@@ -14,11 +14,11 @@ Options:
 
 `-d` Delay the screenshot by the specified number of seconds.
 
-`-h` Show this help message.
-
 `-f` Take a fullscreen screenshot.
 
-`-g` Use uguu.se to upload. It keeps files for 24 hours and has a 150MB max upload size.
+`-h` Show this help message.
+
+`-o` Select a host to use. Can be pomf, uguu, teknik, or imgur (images only).
   
 `-s` Take a selection screenshot.
 
@@ -26,7 +26,7 @@ Options:
 
 `-u` <file> Upload a file.
 
-`-w` Take a screenshot of the current window.
+`-w` Take a window screenshot.
 
 Requirements
 ============
@@ -41,7 +41,7 @@ Requirements
 Todo
 ====
 
-Add support for more hosts. Teknik, maybe imgur?
+POSIX sh compliance.
 
 Credit
 ======
