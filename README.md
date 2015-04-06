@@ -1,7 +1,7 @@
 poomf
 ========
 
-command-line uploader for pomf.se and uguu.se
+command-line uploader for pomf.se, uguu.se, and teknik.io
 
 ![](http://a.pomf.se/ooiyev.png)
 
@@ -14,11 +14,11 @@ Options:
 
 `-d` Delay the screenshot by the specified number of seconds.
 
-`-h` Show this help message.
-
 `-f` Take a fullscreen screenshot.
 
-`-g` Use uguu.se to upload. It keeps files for 24 hours and has a 150MB max upload size.
+`-h` Show this help message.
+
+`-o` Select a host to use. Can be pomf, uguu, or teknik.
 
 `-s` Take a selection screenshot.
 
@@ -26,7 +26,7 @@ Options:
 
 `-u` <file> Upload a file.
 
-`-w` Take a screenshot of the current window.
+`-w` Take a window screenshot.
 
 Requirements
 ============
@@ -41,7 +41,7 @@ Requirements
 Todo
 ====
 
-Add support for more hosts. Teknik, maybe imgur?
+POSIX sh compliance.
 
 Credit
 ======
