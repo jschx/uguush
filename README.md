@@ -9,7 +9,7 @@ Usage
 =====
 
   poomf [options]
-  
+
 Options:
 
 `-d` Delay the screenshot by the specified number of seconds.
@@ -19,7 +19,7 @@ Options:
 `-f` Take a fullscreen screenshot.
 
 `-g` Use uguu.se to upload. It keeps files for 24 hours and has a 150MB max upload size.
-  
+
 `-s` Take a selection screenshot.
 
 `-t` Use HTTPS, if the host supports it.

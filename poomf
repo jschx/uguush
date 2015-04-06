@@ -26,10 +26,7 @@ secs="0"
 
 # Image host
 ihost=pomf
-hosts="pomf uguu teknik imgur"
-
-# Insert your imgur api key here to be able to upload to imgur.
-imgurAPI=null
+hosts="pomf uguu teknik"
 
 ## FUNCTIONS
 
@@ -56,7 +53,7 @@ usage() {
 		-t		 Use HTTPS, if the host supports it.
 		-u <file>  Upload a file
 		-w		 Take a screenshot of the current window.
-		-i		 Image host(pomf/uguu/teknik/imgur). If unspecified, pomf.
+		-i		 Image host(pomf/uguu/teknik). If unspecified, pomf.
 	HELP
 }
 
@@ -85,7 +82,34 @@ upload() {
 		echo -n "Try #${i}... "
 
 		# Upload file to selected host
-		$ihost
+		if [ "${https}" ]; then
+			case $ihost in
+				pomf) curlURL="https://pomf.se/upload.php?output=gyazo" ;;
+				teknik) curlURL="https://api.teknik.io/upload/post" ;;
+				uguu) curlURL="unsupported" ;;
+			esac
+		else
+			case $ihost in
+				pomf) curlURL="http://pomf.se/upload.php?output=gyazo" ;;
+				teknik) curlURL="unsupported" ;;
+				uguu) curlURL="http://uguu.se/api.php?d=upload" ;;
+			esac
+		fi
+
+		if [ "$curlURL" = "unsupported" ]; then
+			echo "[${R}FAILED${N}]"
+			echo "$ihost doesn't support $([ "${https}" ] && echo HTTPS || echo HTTP)(-t flag)."
+			exit 1
+		else
+			result=$(curl -sf -F file="@${FILE}" "$curlURL")
+
+			if [ "$ihost" = "teknik" ]; then
+				result="${result##*name\":\"}"
+				result="${result%%\"*}"
+				result="https://u.teknik.io/${result}"
+			fi
+		fi
+
 
 		if [ "${?}" = 0 ]; then
 
@@ -113,55 +137,6 @@ upload() {
 			echo "[${R}FAILED${N}]"
 		fi
 	done
-}
-
-pomf() {
-	if [ "${https}" ]; then
-		result=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
-	else
-		result=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
-	fi
-}
-
-uguu() {
-	if [ "${https}" ]; then
-		echo "[${R}FAILED${N}]"
-		echo "Uguu.se doesn't support HTTPS yet."
-		exit 1
-	else
-		result=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
-	fi
-}
-
-teknik() {
-	if [ "${https}" ]; then
-		result=$(curl -sf -F file="@${FILE}" https://api.teknik.io/upload/post)
-	else
-		echo "[${R}FAILED${N}]"
-		echo "teknik.io uploading must be done with HTTPS(-t flag)"
-		exit 1
-	fi
-
-	if [[ ! "${result}" =~ "error" ]]; then
-		result="${result##*name\":\"}"
-		result="${result%%\"*}"
-		result="https://u.teknik.io/${result}"
-	fi
-}
-
-imgur() {
-	if [ "${https}" ]; then
-		echo "[${R}FAILED${N}]"
-		echo "imgur uploading must be done with HTTP(no -t flag)"
-		exit 1
-	else
-		result=$(curl -sf -F "key=$imgurAPI" -H "Expect: " -F "image=@${FILE}" \
-			http://imgur.com/api/upload.xml )
-	fi
-
-	if [ "${?}" = 0 ]; then
-		result=$(echo $result | sed -r 's/.*<original_image>(.*)<\/original_image>.*/\1/')
-	fi
 }
 
 ## EXIT IF NO ARGUMENTS FOUND
