@@ -26,7 +26,7 @@ secs="0"
 
 # Image host
 ihost=pomf
-hosts="pomg uguu teknik imgur"
+hosts="pomf uguu teknik imgur"
 
 ## FUNCTIONS
 
@@ -84,7 +84,7 @@ upload() {
 		# Upload file to selected host
         $ihost
 
-		if [ ! -z "result" ]; then
+        if [ "${?}" = 0 ]; then
 
 			# Copy link to clipboard
 			printf %s "${result}" | xclip -selection primary
@@ -130,9 +130,21 @@ uguu() {
     fi
 }
 
-#teknik() {
+teknik() {
+    if [ "${https}" ]; then
+        result=$(curl -sf -F file="@${FILE}" https://api.teknik.io/upload/post)
+    else
+        echo "[${R}FAILED${N}]"
+        echo "teknik.io uploading must be done with HTTPS(-t flag)"
+        exit 1
+    fi
 
-#}
+    if [[ ! "${result}" =~ "error" ]]; then
+        result="${result##*name\":\"}"
+        result="${result%%\"*}"
+        result="https://u.teknik.io/${result}"
+    fi
+}
 
 #imgur() {
 
@@ -169,7 +181,6 @@ while getopts :d:fghstui:w opt; do
         i)
             #Set host
             [[ "$hosts" =~ "${OPTARG}" ]] && ihost=${OPTARG} || exit 1 ;;
-
 		h)
 			# Show help and exit with EXIT_SUCCESS
 			usage
