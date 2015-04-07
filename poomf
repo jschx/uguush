@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 #
 # poomf - command-line uploader for pomf.se, uguu.se, and teknik.io
-#
-
 # by joe - js1 at openmailbox dot org
 # refactored by arianon - arianon at openmailbox dot org
+#
 
 ## CONFIGURATION
 
@@ -101,7 +100,11 @@ upload() {
 			echo "$usehost doesn't support $([ "${https}" ] && echo HTTPS || echo HTTP)."
 			exit 1
 		else
-			result=$(curl -sf -F file="@${FILE}" "$upurl")
+			if [ "$usehost" = "pomf" ]; then
+				result=$(curl -sf -F files[]="@${FILE}" "$upurl")
+			else
+				result=$(curl -sf -F file="@${FILE}" "$upurl")
+			fi
 
 			if [ "$usehost" = "teknik" ]; then
 				result="${result##*name\":\"}"
