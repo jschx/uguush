@@ -46,14 +46,14 @@ usage() {
 		$(basename "${0}") [options]
 
 	Options:
-		-d           Delay the screenshot by the specified number of seconds.
-		-f           Take a fullscreen screenshot.
-		-h           Show this help message.
-		-o           Select a host to use. Can be pomf, uguu, or teknik.
-		-s           Take a selection screenshot.
-		-t           Use HTTPS, if the host supports it.
-		-u <file>    Upload a file
-		-w           Take a screenshot of the current window.
+		-d		   Delay the screenshot by the specified number of seconds.
+		-f		   Take a fullscreen screenshot.
+		-h		   Show this help message.
+		-o		   Select a host to use. Can be pomf, uguu, or teknik.
+		-s		   Take a selection screenshot.
+		-t		   Use HTTPS, if the host supports it.
+		-u <file>	Upload a file
+		-w		   Take a screenshot of the current window.
 	HELP
 }
 
@@ -77,46 +77,38 @@ screenshot() {
 	fi
 }
 
-pomf() {
-	if [ "${https}" ]; then
-		result=$(curl -sf -F files[]="@${FILE}" "https://pomf.se/upload.php?output=gyazo")
-	else
-		result=$(curl -sf -F files[]="@${FILE}" "http://pomf.se/upload.php?output=gyazo")
-	fi
-}
-
-uguu() {
-	if [ "${https}" ]; then
-		echo "[${R}FAILED${N}]"
-		echo "Uguu.se doesn't support HTTPS yet."
-		exit 1
-	else
-		result=$(curl -sf -F file="@${FILE}" "http://uguu.se/api.php?d=upload")
-	fi
-}
-
-teknik() {
-	if [ "${https}" ]; then
-		result=$(curl -sf -F file="@${FILE}" https://api.teknik.io/upload/post)
-	else
-		echo "[${R}FAILED${N}]"
-		echo "Teknik.io only supports HTTPS."
-		exit 1
-	fi
-
-	if [[ ! "${result}" =~ error ]]; then
-		result="${result##*name\":\"}"
-		result="${result%%\"*}"
-		result="https://u.teknik.io/${result}"
-	fi
-}
-
 upload() {
 	for (( i = 1; i <= 3; i++ )); do
-		printf %s "Try #${i}... "
+		echo -n "Try #${i}... "
 
 		# Upload file to selected host
-		${usehost}
+		if [ "${https}" ]; then
+			case $usehost in
+				pomf) curlURL="https://pomf.se/upload.php?output=gyazo" ;;
+				teknik) curlURL="https://api.teknik.io/upload/post" ;;
+				uguu) curlURL="unsupported" ;;
+			esac
+		else
+			case $usehost in
+				pomf) curlURL="http://pomf.se/upload.php?output=gyazo" ;;
+				teknik) curlURL="unsupported" ;;
+				uguu) curlURL="http://uguu.se/api.php?d=upload" ;;
+			esac
+		fi
+
+		if [ "$curlURL" = "unsupported" ]; then
+			echo "[${R}FAILED${N}]"
+			echo "$usehost doesn't support $([ "${https}" ] && echo HTTPS || echo HTTP)(-t flag)."
+			exit 1
+		else
+			result=$(curl -sf -F file="@${FILE}" "$curlURL")
+
+			if [ "$usehost" = "teknik" ]; then
+				result="${result##*name\":\"}"
+				result="${result%%\"*}"
+				result="https://u.teknik.io/${result}"
+			fi
+		fi
 
 		if [ "${?}" = 0 ]; then
 
