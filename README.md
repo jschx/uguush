@@ -9,7 +9,7 @@ Usage
 =====
 
   poomf [options]
-  
+
 Options:
 
 `-d` Delay the screenshot by the specified number of seconds.
@@ -19,7 +19,7 @@ Options:
 `-h` Show this help message.
 
 `-o` Select a host to use. Can be pomf, uguu, or teknik.
-  
+
 `-s` Take a selection screenshot.
 
 `-t` Use HTTPS, if the host supports it.
