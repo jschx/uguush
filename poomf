@@ -78,35 +78,34 @@ screenshot() {
 
 upload() {
 	for (( i = 1; i <= 3; i++ )); do
-		echo -n "Try #${i}... "
+		printf %s "Try #${i}... "
 
 		# Upload file to selected host
 		if [ "${https}" ]; then
-			case $usehost in
+			case "${usehost}" in
 				pomf) upurl="https://pomf.se/upload.php?output=gyazo" ;;
 				teknik) upurl="https://api.teknik.io/upload/post" ;;
 				uguu) upurl="unsupported" ;;
 			esac
 		else
-			case $usehost in
+			case "${usehost}" in
 				pomf) upurl="http://pomf.se/upload.php?output=gyazo" ;;
 				teknik) upurl="unsupported" ;;
 				uguu) upurl="http://uguu.se/api.php?d=upload" ;;
 			esac
 		fi
 
-		if [ "$upurl" = "unsupported" ]; then
+		if [ "${upurl}" = "unsupported" ]; then
 			echo "[${R}FAILED${N}]"
-			echo "$usehost doesn't support $([ "${https}" ] && echo HTTPS || echo HTTP)."
+			echo "${usehost} doesn't support $([ "${https}" ] && echo HTTPS || echo HTTP)."
 			exit 1
 		else
-			if [ "$usehost" = "pomf" ]; then
+			if [ "${usehost}" = "pomf" ]; then
 				result=$(curl -sf -F files[]="@${FILE}" "$upurl")
-			else
-				result=$(curl -sf -F file="@${FILE}" "$upurl")
-			fi
+			elif [ "${usehost}" = "uguu" ]; then
 
-			if [ "$usehost" = "teknik" ]; then
+				result=$(curl -sf -F file="@${FILE}" "$upurl")
+			elif [ "${usehost}" = "teknik" ]; then
 				result="${result##*name\":\"}"
 				result="${result%%\"*}"
 				result="https://u.teknik.io/${result}"
@@ -148,7 +147,7 @@ if [ $# -lt 1 ]; then
 fi
 
 ## PARSE OPTIONS
-while getopts :d:fho:stuw opt; do
+while getopts :d:fho:stu:w opt; do
 	case "${opt}" in
 		d)
 			# Set delay value
