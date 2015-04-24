@@ -8,7 +8,7 @@ command-line uploader for pomf.se, uguu.se, and teknik.io
 Usage
 =====
 
-  poomf [options]
+poomf [options]
 
 Options:
 

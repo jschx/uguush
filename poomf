@@ -45,15 +45,15 @@ usage() {
 		$(basename "${0}") [options]
 
 	Options:
-		-d		   Delay the screenshot by the specified number of seconds.
-		-f		   Take a fullscreen screenshot.
-		-h		   Show this help message.
-		-o		   Select a host to use. Can be pomf, uguu, or teknik.
-		-s		   Take a selection screenshot.
-		-t		   Use HTTPS, if the host supports it.
-		-u <file>  Upload a file.
-		-x		   Do not notify DBUS, update log, or modify clipboard
-		-w		   Take a screenshot of the current window.
+	    -d		   Delay the screenshot by the specified number of seconds.
+	    -f		   Take a fullscreen screenshot.
+	    -h		   Show this help message.
+	    -o		   Select a host to use. Can be pomf, uguu, or teknik.
+	    -s		   Take a selection screenshot.
+	    -t		   Use HTTPS, if the host supports it.
+	    -u <file>	   Upload a file.
+	    -x		   Do not notify dbus, update the log, or modify the clipboard.
+	    -w		   Take a screenshot of the current window.
 	HELP
 }
 
@@ -115,17 +115,17 @@ upload() {
 
 		if [ "${?}" = 0 ]; then
 
-                        if [ ! "${nocomm}" ]; then 
-                                # Copy link to clipboard
-                                printf %s "${result}" | xclip -selection primary
-                                printf %s "${result}" | xclip -selection clipboard
+			if [ ! "${nocomm}" ]; then 
+				# Copy link to clipboard
+				printf %s "${result}" | xclip -selection primary
+				printf %s "${result}" | xclip -selection clipboard
 
-                                # Log url to file
-                                echo "$(date +"%D %R") | "${FILE}" | ${result}" >> ~/.pomfs.txt
+				# Log url to file
+				echo "$(date +"%D %R") | "${FILE}" | ${result}" >> ~/.pomfs.txt
 
-                                # Notify user of completion
-                                notify-send "pomf!" "${result}"
-                        fi
+				# Notify user of completion
+				notify-send "pomf!" "${result}"
+			fi
 
 			# Output message to term
 			echo "[${G}OK${N}]"
