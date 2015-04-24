@@ -28,6 +28,8 @@ Options:
 
 `-w` Take a window screenshot.
 
+`-x` Suppress communications: Do not log, modify clipboard, or notify DBUS.
+
 Requirements
 ============
 
