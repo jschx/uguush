@@ -51,7 +51,8 @@ usage() {
 		-o		   Select a host to use. Can be pomf, uguu, or teknik.
 		-s		   Take a selection screenshot.
 		-t		   Use HTTPS, if the host supports it.
-		-u <file>	   Upload a file
+		-u <file>  Upload a file.
+		-x		   Do not notify DBUS, update log, or modify clipboard
 		-w		   Take a screenshot of the current window.
 	HELP
 }
@@ -114,15 +115,17 @@ upload() {
 
 		if [ "${?}" = 0 ]; then
 
-			# Copy link to clipboard
-			printf %s "${result}" | xclip -selection primary
-			printf %s "${result}" | xclip -selection clipboard
+                        if [ ! "${nocomm}" ]; then 
+                                # Copy link to clipboard
+                                printf %s "${result}" | xclip -selection primary
+                                printf %s "${result}" | xclip -selection clipboard
 
-			# Log url to file
-			echo "$(date +"%D %R") | ${result}" >> ~/.pomfs.txt
+                                # Log url to file
+                                echo "$(date +"%D %R") | "${FILE}" | ${result}" >> ~/.pomfs.txt
 
-			# Notify user of completion
-			notify-send "pomf!" "${result}"
+                                # Notify user of completion
+                                notify-send "pomf!" "${result}"
+                        fi
 
 			# Output message to term
 			echo "[${G}OK${N}]"
@@ -147,7 +150,7 @@ if [ $# -lt 1 ]; then
 fi
 
 ## PARSE OPTIONS
-while getopts :d:fho:stu:w opt; do
+while getopts :d:fho:stu:wx opt; do
 	case "${opt}" in
 		d)
 			# Set delay value
@@ -175,6 +178,9 @@ while getopts :d:fho:stu:w opt; do
 		w)
 			# Take shot of current window
 			win=true ;;
+		x)
+			# Do not notify dbus, update log, or modify clipboard
+			nocomm=true ;;
 		*)
 			# Print help and EXIT_FAILURE
 			usage
