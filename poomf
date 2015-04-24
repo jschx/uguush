@@ -51,8 +51,8 @@ usage() {
 		-o		   Select a host to use. Can be pomf, uguu, or teknik.
 		-s		   Take a selection screenshot.
 		-t		   Use HTTPS, if the host supports it.
-		-u <file>          Upload a file.
-		-x                 Do not notify DBUS, update log, or modify clipboard
+		-u <file>   Upload a file.
+		-x		   Do not notify DBUS, update log, or modify clipboard
 		-w		   Take a screenshot of the current window.
 	HELP
 }
