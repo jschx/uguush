@@ -25,10 +25,13 @@ secs='0'
 usehost='pomf'
 hosts='pomf uguu teknik'
 
+# url shortener
+shorteners='waaai'
+
 ## EXIT IF NO ARGUMENTS ARE FOUND
 
 if [ $# -lt 1 ]; then
-  echo '`poomf` requres and argument. Run `poomf -h` for help.'
+  echo '`poomf` requires an argument. Run `poomf -h` for help.'
   exit 1
 fi
 
@@ -59,6 +62,7 @@ Options:
     -u <file>    Upload a file.
     -x           Do not notify dbus, update the log, or modify the clipboard.
     -w           Take a screenshot of the current window.
+    -S           Shorten the url. Can only be waaai at the moment.
 HELP
 }
 
@@ -97,6 +101,10 @@ upload() {
       esac
     fi
 
+    case "${useshortener}" in
+        waaai) shorturl='https://api.waa.ai/shorten' ;;
+    esac
+
     if [ "${upurl}" = 'unsupported' ]; then
       echo "[${r}FAILED${n}]"
       echo "${usehost} doesn't support $([ "${https}" ] && echo HTTPS || echo HTTP)."
@@ -111,6 +119,20 @@ upload() {
         result="${result##*name\":\"}"
         result="${result%%\"*}"
         result="https://u.teknik.io/${result}"
+      fi
+      if [ "${useshortener}" = 'waaai' ]; then
+        tempresult="$(curl -sf -F url="${result}" "${shorturl}")"
+        code="${tempresult##*short_code\":\"}"
+        code="${code%%\"*}"
+        result="https://waa.ai/${code}"
+
+        extension="${tempresult##*extension\":}"
+        extension="${extension%%\}*}"
+        if [ "${extension}" != "false" ]; then
+          extension=${extension##\"}
+          extension=${extension%%\"}
+          result="${result}.${extension}"
+        fi
       fi
     fi
 
@@ -142,7 +164,7 @@ upload() {
 
 ## PARSE OPTIONS
 
-while getopts :d:fho:stu:wx opt; do
+while getopts :d:fho:stu:wxS: opt; do
   case "${opt}" in
     d)
       # set delay value
@@ -173,6 +195,9 @@ while getopts :d:fho:stu:wx opt; do
     x)
       # do not notify dbus, update log, or modify clipboard
       nocomm='true' ;;
+    S)
+      # set shortening service
+      [[ "${shorteners}" =~ ${OPTARG} ]] && useshortener="${OPTARG}" || exit 1 ;;
     *)
       # print help and EXIT_FAILURE
       usage
