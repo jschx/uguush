@@ -3,7 +3,7 @@ uguush
 
 command-line uploader for uguu.se and teknik.io
 
-![](http://a.pomf.se/ooiyev.png)
+![](https://u.teknik.io/WldwN2.png)
 
 Usage
 =====
