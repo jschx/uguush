@@ -1,11 +1,11 @@
-# poomf window
+# uguu window
 ctrl + shift + 2
-	poomf -w
+	uguush -w
 
-# poomf fullscreen
+# uguu fullscreen
 ctrl + shift + 3
-	poomf -f
+	uguush -f
 
-# poomf selection
+# uguu selection
 ctrl + shift + @4
-	poomf -s
+	uguush -s
