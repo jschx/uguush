@@ -1,14 +1,14 @@
-poomf
+uguush
 ========
 
-command-line uploader for pomf.se, uguu.se, and teknik.io
+command-line uploader for uguu.se and teknik.io
 
 ![](http://a.pomf.se/ooiyev.png)
 
 Usage
 =====
 
-poomf [options]
+uguush [options]
 
 Options:
 
@@ -18,7 +18,7 @@ Options:
 
 `-h` Show this help message.
 
-`-o` Select a host to use. Can be pomf, uguu, or teknik.
+`-o` Select a host to use. Can be uguu or teknik.
 
 `-s` Take a selection screenshot.
 
