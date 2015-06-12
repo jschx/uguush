@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# uguush - upload to uguu.se and teknik.io
+# uguush - upload to uguu.se, teknik.io and 0x0.st
 #
 
 ## CONFIGURATION
@@ -23,8 +23,8 @@ secs='0'
 
 # image host
 usehost='uguu'
-hosts='uguu teknik'
-shorteners='waaai'
+hosts='uguu teknik 0x0'
+shorteners='waaai 0x0'
 
 ## EXIT IF NO ARGUMENTS ARE FOUND
 
@@ -54,7 +54,7 @@ Options:
     -d           Delay the screenshot by the specified number of seconds.
     -f           Take a fullscreen screenshot.
     -h           Show this help message.
-    -o           Select a host to use. Can be uguu or teknik.
+    -o           Select a host to use. Can be uguu, teknik or 0x0.
     -s           Take a selection screenshot.
     -t           Use HTTPS, if the host supports it.
     -u <file>    Upload a file.
@@ -87,17 +87,20 @@ upload() {
     if [ "${https}" ]; then
       case "${usehost}" in
         teknik) upurl='https://api.teknik.io/upload/post' ;;
+        0x0) upurl='https://0x0.st/' ;;
         uguu) upurl='unsupported' ;;
       esac
     else
       case "${usehost}" in
         teknik) upurl='unsupported' ;;
+        0x0) upurl='http://0x0.st/' ;;
         uguu) upurl='http://uguu.se/api.php?d=upload' ;;
       esac
     fi
 
     case "${useshortener}" in
       waaai) shorturl='https://api.waa.ai/shorten' ;;
+      0x0) shorturl='http://0x0.st/' ;;
     esac
 
     if [ "${upurl}" = 'unsupported' ]; then
@@ -106,6 +109,8 @@ upload() {
       exit 1
     else
       if [ "${usehost}" = 'uguu' ]; then
+        result="$(curl -sf -F file="@${FILE}" "${upurl}")"
+      elif [ "${usehost}" = '0x0' ]; then
         result="$(curl -sf -F file="@${FILE}" "${upurl}")"
       elif [ "${usehost}" = 'teknik' ]; then
         result="$(curl -sf -F file="@${FILE}" "${upurl}")"
@@ -125,6 +130,8 @@ upload() {
           extension=${extension%%\"}
           result="${result}.${extension}"
         fi
+      elif [ "${useshortener}" = '0x0' ]; then
+          result="$(curl -sf -F shorten="${result}" "${shorturl}")"
       fi  
     fi
 

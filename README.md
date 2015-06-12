@@ -1,7 +1,7 @@
 uguush
 ========
 
-command-line uploader for uguu.se and teknik.io
+command-line uploader for uguu.se, teknik.io and 0x0.st
 
 ![](https://u.teknik.io/WldwN2.png)
 
@@ -18,7 +18,7 @@ Options:
 
 `-h` Show this help message.
 
-`-o` Select a host to use. Can be uguu or teknik.
+`-o` Select a host to use. Can be uguu, teknik or 0x0.
 
 `-s` Take a selection screenshot.
 
