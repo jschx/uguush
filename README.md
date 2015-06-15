@@ -1,7 +1,7 @@
 uguush
 ========
 
-command-line uploader for uguu.se, teknik.io and 0x0.st
+command-line uploader for various file hosts
 
 ![](https://u.teknik.io/WldwN2.png)
 
@@ -18,7 +18,7 @@ Options:
 
 `-h` Show this help message.
 
-`-o` Select a host to use. Can be uguu, teknik or 0x0.
+`-o` Select a host to use. Can be uguu, teknik, 0x0, or xpo.
 
 `-s` Take a selection screenshot.
 
@@ -29,6 +29,8 @@ Options:
 `-w` Take a window screenshot.
 
 `-x` Suppress communications: Do not log, modify clipboard, or notify DBUS.
+
+`-S` Select a shortener to use. Can be waaai or 0x0.
 
 Requirements
 ============
