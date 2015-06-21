@@ -32,6 +32,8 @@ Options:
 
 `-S` Select a shortener to use. Can be waaai or 0x0.
 
+`-l` Re-upload the given url.
+
 Requirements
 ============
 

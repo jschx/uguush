@@ -15,9 +15,6 @@ fshot='maim --hidecursor'
 sshot='maim -s --hidecursor'
 wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') --hidecursor"
 
-# default screenshot name
-FILE="$(mktemp --suffix=.png)"
-
 # default delay
 secs='0'
 
@@ -61,6 +58,7 @@ Options:
     -x           Do not notify dbus, update the log, or modify the clipboard.
     -w           Take a screenshot of the current window.
     -S           Select a shortener to use. Can be waaai or 0x0.
+    -l <url>     Upload the provided url.
 HELP
 }
 
@@ -73,11 +71,19 @@ delay() {
 
 screenshot() {
   if [ "${ful}" ]; then
+    FILE="$(mktemp --suffix=.png)"
     ${fshot} "${FILE}"
   elif [ "${sel}" ]; then
+    FILE="$(mktemp --suffix=.png)"
     ${sshot} "${FILE}"
   elif [ "${win}" ]; then
+    FILE="$(mktemp --suffix=.png)"
     ${wshot} "${FILE}"
+  elif [ "${lnk}" ]; then
+    urlext="$(basename ${url})"
+    urlext=${urlext#*.}
+    FILE="$(mktemp --suffix=.${urlext})"
+    $(curl -s "${url}" > "${FILE}")
   fi
 }
 
@@ -170,7 +176,7 @@ upload() {
 
 ## PARSE OPTIONS
 
-while getopts :d:fho:stu:wxS: opt; do
+while getopts :d:fho:stu:wxS:l: opt ;do
   case "${opt}" in
     d)
       # set delay value
@@ -204,6 +210,10 @@ while getopts :d:fho:stu:wxS: opt; do
     S)
       # set shortener
       [[ "${shorteners}" =~ ${OPTARG} ]] && useshortener="${OPTARG}" || exit 1 ;;
+    l)
+      # set url to upload
+      lnk='true'
+      url="${OPTARG}" ;;
     *)
       # print help and EXIT_FAILURE
       usage
