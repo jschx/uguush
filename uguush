@@ -82,7 +82,7 @@ screenshot() {
   elif [ "${lnk}" ]; then
     if [ -f "/usr/share/mime/globs" ]; then
       urlext="$(curl -sf --head "${url}" | grep 'Content-Type: ' | head -1 | grep -Po '(?<=\ )[^\;]*')"
-      urlext="$(echo "${urlext}" | cat -v | sed -e "s/\^M//")"
+      urlext="$(echo "${urlext}" | sed -e "s/\\n//")"
       urlext="$(cat /usr/share/mime/globs | grep "${urlext}" | sort -r | head -1 | grep -Po '(?<=\.)[^\n]*')"
     else
       urlext="$(basename ${url})"
