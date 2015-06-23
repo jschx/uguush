@@ -80,10 +80,15 @@ screenshot() {
     FILE="$(mktemp --suffix=.png)"
     ${wshot} "${FILE}"
   elif [ "${lnk}" ]; then
-    urlext="$(basename ${url})"
-    urlext=${urlext#*.}
+    if [ -f "/usr/share/mime/globs" ]; then
+      urlext="$(curl -sf --head "${url}" | grep 'Content-Type' | grep -Po '(?<=\ )[^\;]*')"
+      urlext="$(cat /usr/share/mime/globs | grep "${urlext}" | grep -Po '(?<=\.)[^\n]*')"
+    else
+      urlext="$(basename ${url})"
+      urlext=${urlext#*.}
+    fi
     FILE="$(mktemp --suffix=.${urlext})"
-    $(curl -s "${url}" > "${FILE}")
+    $(curl -sf "${url}" > "${FILE}")
   fi
 }
 
