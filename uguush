@@ -75,7 +75,11 @@ screenshot() {
     ${fshot} "${FILE}"
   elif [ "${sel}" ]; then
     FILE="$(mktemp --suffix=.png)"
-    ${sshot} "${FILE}"
+    ${sshot} "${FILE}" &> /dev/null
+    if ! [ -s "${FILE}" ]; then
+      $(rm "${FILE}" 2> /dev/null)
+      exit
+    fi
   elif [ "${win}" ]; then
     FILE="$(mktemp --suffix=.png)"
     ${wshot} "${FILE}"
