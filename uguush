@@ -20,8 +20,8 @@ secs='0'
 
 # image host
 usehost='uguu'
-hosts='uguu teknik 0x0 xpo'
-shorteners='waaai 0x0'
+hosts='uguu teknik 0x0 xpo ptpb'
+shorteners='waaai 0x0 ptpb'
 
 ## EXIT IF NO ARGUMENTS ARE FOUND
 
@@ -51,13 +51,13 @@ Options:
     -d           Delay the screenshot by the specified number of seconds.
     -f           Take a fullscreen screenshot.
     -h           Show this help message.
-    -o           Select a host to use. Can be uguu, teknik, 0x0, or xpo.
+    -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, or xpo.
     -s           Take a selection screenshot.
     -t           Use HTTPS, if the host supports it.
     -u <file>    Upload a file.
     -x           Do not notify dbus, update the log, or modify the clipboard.
     -w           Take a screenshot of the current window.
-    -S           Select a shortener to use. Can be waaai or 0x0.
+    -S           Select a shortener to use. Can be waaai, ptpb, or 0x0.
     -l <url>     Upload the provided url.
 HELP
 }
@@ -86,7 +86,7 @@ screenshot() {
   elif [ "${lnk}" ]; then
     if [ -f "/usr/share/mime/globs" ]; then
       urlext="$(curl -sf --head "${url}" | grep 'Content-Type: ' | head -1 | grep -Po '(?<=\ )[^\;]*')"
-      urlext="$(echo "${urlext}" | sed -e "s/\\n//")"
+      urlext="$(echo "${urlext}" | sed -e "s/\\r//")"
       urlext="$(cat /usr/share/mime/globs | grep "${urlext}" | sort -r | head -1 | grep -Po '(?<=\.)[^\n]*')"
     else
       urlext="$(basename ${url})"
@@ -107,6 +107,7 @@ upload() {
         0x0) upurl='https://0x0.st/' ;;
         uguu) upurl='unsupported' ;;
         xpo) upurl='unsupported' ;;
+        ptpb) upurl='https://ptpb.pw/' ;;
       esac
     else
       case "${usehost}" in
@@ -114,12 +115,14 @@ upload() {
         0x0) upurl='http://0x0.st/' ;;
         uguu) upurl='http://uguu.se/api.php?d=upload' ;;
         xpo) upurl='http://xpo.pw/upload.php' ;;
+        ptpb) upurl='unsupported' ;;
       esac
     fi
 
     case "${useshortener}" in
       waaai) shorturl='https://api.waa.ai/shorten' ;;
       0x0) shorturl='http://0x0.st/' ;;
+      ptpb) shorturl='https://ptpb.pw/u'
     esac
 
     if [ "${upurl}" = 'unsupported' ]; then
@@ -140,6 +143,10 @@ upload() {
         result="$(curl -sf -F files[]="@${FILE}" "${upurl}")"
         result="$(echo "${result}" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')"
         result="$(echo "http://u.xpo.pw/${result}")"
+      elif [ "${usehost}" = 'ptpb' ]; then
+        result="$(curl -sf -F c="@${FILE}" "${upurl}")"
+        result="${result##*url: }"
+        result="${result%%$'\n'*}"
       fi
       if [ "${useshortener}" = 'waaai' ]; then
         tempresult="$(curl -sf -F url="${result}" "${shorturl}")"
@@ -154,8 +161,10 @@ upload() {
           result="${result}.${extension}"
         fi
       elif [ "${useshortener}" = '0x0' ]; then
-          result="$(curl -sf -F shorten="${result}" "${shorturl}")"
-      fi  
+        result="$(curl -sf -F shorten="${result}" "${shorturl}")"
+      elif [ "${useshortener}" = 'ptpb' ]; then
+        result="$(curl -sf -F c="${result}" "${shorturl}")"
+      fi
     fi
 
     if [ "${?}" = 0 ]; then
