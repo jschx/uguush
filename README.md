@@ -18,7 +18,7 @@ Options:
 
 `-h` Show this help message.
 
-`-o` Select a host to use. Can be uguu, teknik, 0x0, or xpo.
+`-o` Select a host to use. Can be uguu, teknik, 0x0, ptpb, or xpo.
 
 `-s` Take a selection screenshot.
 
@@ -30,7 +30,7 @@ Options:
 
 `-x` Suppress communications: Do not log, modify clipboard, or notify DBUS.
 
-`-S` Select a shortener to use. Can be waaai or 0x0.
+`-S` Select a shortener to use. Can be waaai, ptpb, or 0x0.
 
 `-l` Re-upload the given url.
 
