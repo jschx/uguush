@@ -18,7 +18,7 @@ Options:
 
 `-h` Show this help message.
 
-`-o` Select a host to use. Can be uguu, teknik, 0x0, ptpb, or xpo.
+`-o` Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, or xpo.
 
 `-s` Take a selection screenshot.
 

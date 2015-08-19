@@ -20,7 +20,7 @@ secs='0'
 
 # image host
 usehost='uguu'
-hosts='uguu teknik 0x0 xpo ptpb'
+hosts='uguu teknik 0x0 xpo ptpb maxfile'
 shorteners='waaai 0x0 ptpb'
 
 ## EXIT IF NO ARGUMENTS ARE FOUND
@@ -51,7 +51,7 @@ Options:
     -d           Delay the screenshot by the specified number of seconds.
     -f           Take a fullscreen screenshot.
     -h           Show this help message.
-    -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, or xpo.
+    -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, or xpo.
     -s           Take a selection screenshot.
     -t           Use HTTPS, if the host supports it.
     -u <file>    Upload a file.
@@ -108,6 +108,7 @@ upload() {
         uguu) upurl='unsupported' ;;
         xpo) upurl='unsupported' ;;
         ptpb) upurl='https://ptpb.pw/' ;;
+        maxfile) upurl='https://maxfile.ro/static/upload.php' ;;
       esac
     else
       case "${usehost}" in
@@ -116,6 +117,7 @@ upload() {
         uguu) upurl='http://uguu.se/api.php?d=upload' ;;
         xpo) upurl='http://xpo.pw/upload.php' ;;
         ptpb) upurl='unsupported' ;;
+        maxfile) upurl='unsupported' ;;
       esac
     fi
 
@@ -147,6 +149,10 @@ upload() {
         result="$(curl -sf -F c="@${FILE}" "${upurl}")"
         result="${result##*url: }"
         result="${result%%$'\n'*}"
+      elif [ "${usehost}" = 'maxfile' ]; then
+        result="$(curl -sf -F files[]="@${FILE}" "${upurl}")"
+        result="$(echo "${result}" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')"
+        result="$(echo "https://d.maxfile.ro/${result}")"
       fi
       if [ "${useshortener}" = 'waaai' ]; then
         tempresult="$(curl -sf -F url="${result}" "${shorturl}")"
