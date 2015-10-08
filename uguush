@@ -114,7 +114,7 @@ upload() {
       case "${usehost}" in
         teknik) upurl='unsupported' ;;
         0x0) upurl='http://0x0.st/' ;;
-        uguu) upurl='http://uguu.se/api.php?d=upload' ;;
+        uguu) upurl='http://uguu.se/api.php?d=upload-tool' ;;
         ptpb) upurl='unsupported' ;;
         maxfile) upurl='unsupported' ;;
         mixtape) upurl='unsupported' ;;
