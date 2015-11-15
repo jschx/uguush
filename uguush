@@ -12,8 +12,11 @@ g="$(tput setaf 2)"
 
 # screenshot utility
 fshot='maim --hidecursor'
+#fshot='scrot'
 sshot='maim -s --hidecursor'
+#sshot='scrot -s'
 wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') --hidecursor"
+#wshot='scrot -s'
 
 # default delay
 secs='0'
@@ -53,7 +56,6 @@ Options:
     -h           Show this help message.
     -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, or mixtape.
     -s           Take a selection screenshot.
-    -t           Use HTTPS, if the host supports it.
     -u <file>    Upload a file.
     -x           Do not notify dbus, update the log, or modify the clipboard.
     -w           Take a screenshot of the current window.
@@ -101,25 +103,14 @@ upload() {
   for (( i = 1; i <= 3; i++ )); do
     printf %s "Try #${i}... "
 
-    if [ "${https}" ]; then
-      case "${usehost}" in
-        teknik) upurl='https://api.teknik.io/upload/post' ;;
-        0x0) upurl='https://0x0.st/' ;;
-        uguu) upurl='unsupported' ;;
-        ptpb) upurl='https://ptpb.pw/' ;;
-        maxfile) upurl='https://maxfile.ro/static/upload.php' ;;
-        mixtape) upurl='https://mixtape.moe/upload.php' ;;
-      esac
-    else
-      case "${usehost}" in
-        teknik) upurl='unsupported' ;;
-        0x0) upurl='http://0x0.st/' ;;
-        uguu) upurl='http://uguu.se/api.php?d=upload-tool' ;;
-        ptpb) upurl='unsupported' ;;
-        maxfile) upurl='unsupported' ;;
-        mixtape) upurl='unsupported' ;;
-      esac
-    fi
+    case "${usehost}" in
+      teknik) upurl='https://api.teknik.io/upload/post' ;;
+      0x0) upurl='https://0x0.st/' ;;
+      uguu) upurl='https://uguu.se/api.php?d=upload-tool' ;;
+      ptpb) upurl='https://ptpb.pw/' ;;
+      maxfile) upurl='https://maxfile.ro/static/upload.php' ;;
+      mixtape) upurl='https://mixtape.moe/upload.php' ;;
+    esac
 
     case "${useshortener}" in
       waaai) shorturl='https://api.waa.ai/shorten' ;;
@@ -201,7 +192,7 @@ upload() {
 
 ## PARSE OPTIONS
 
-while getopts :d:fho:stu:wxS:l: opt ;do
+while getopts :d:fho:su:wxS:l: opt ;do
   case "${opt}" in
     d)
       # set delay value
@@ -219,9 +210,6 @@ while getopts :d:fho:stu:wxS:l: opt ;do
     s)
       # take shot with selection
       sel='true' ;;
-    t)
-      # use https
-      https='true' ;;
     u)
       # change $FILE to the specified file with -u
       upl='true'
