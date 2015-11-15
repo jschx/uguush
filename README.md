@@ -22,8 +22,6 @@ Options:
 
 `-s` Take a selection screenshot.
 
-`-t` Use HTTPS, if the host supports it.
-
 `-u` <file> Upload a file.
 
 `-w` Take a window screenshot.
