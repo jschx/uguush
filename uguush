@@ -104,7 +104,7 @@ upload() {
     printf %s "Try #${i}... "
 
     case "${usehost}" in
-      teknik) upurl='https://api.teknik.io/upload/post' ;;
+      teknik) upurl='https://api.teknik.io/v1/Upload' ;;
       0x0) upurl='https://0x0.st/' ;;
       uguu) upurl='https://uguu.se/api.php?d=upload-tool' ;;
       ptpb) upurl='https://ptpb.pw/' ;;
@@ -129,9 +129,8 @@ upload() {
         result="$(curl -sf -F file="@${FILE}" "${upurl}")"
       elif [ "${usehost}" = 'teknik' ]; then
         result="$(curl -sf -F file="@${FILE}" "${upurl}")"
-        result="${result##*name\":\"}"
+        result="${result##*url\":\"}"
         result="${result%%\"*}"
-        result="https://u.teknik.io/${result}"
       elif [ "${usehost}" = 'mixtape' ]; then
         result="$(curl -sf -F files[]="@${FILE}" "${upurl}")"
         result="$(echo "${result}" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')"
