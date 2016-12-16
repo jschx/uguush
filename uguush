@@ -23,7 +23,7 @@ secs='0'
 
 # image host
 usehost='uguu'
-hosts='uguu teknik 0x0 mixtape ptpb maxfile'
+hosts='uguu teknik 0x0 mixtape ptpb maxfile lewd'
 shorteners='waaai 0x0 ptpb'
 
 ## EXIT IF NO ARGUMENTS ARE FOUND
@@ -54,7 +54,7 @@ Options:
     -d           Delay the screenshot by the specified number of seconds.
     -f           Take a fullscreen screenshot.
     -h           Show this help message.
-    -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, or mixtape.
+    -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, mixtape or lewd.
     -s           Take a selection screenshot.
     -u <file>    Upload a file.
     -x           Do not notify dbus, update the log, or modify the clipboard.
@@ -110,6 +110,7 @@ upload() {
       ptpb) upurl='https://ptpb.pw/' ;;
       maxfile) upurl='https://maxfile.ro/static/upload.php' ;;
       mixtape) upurl='https://mixtape.moe/upload.php' ;;
+      lewd) upurl='https://lewd.se/api.php?d=upload-tool' ;;
     esac
 
     case "${useshortener}" in
@@ -143,6 +144,8 @@ upload() {
         result="$(curl -sf -F files[]="@${FILE}" "${upurl}")"
         result="$(echo "${result}" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')"
         result="$(echo "https://d.maxfile.ro/${result}")"
+      elif [ "${usehost}" = 'lewd' ]; then
+        result="$(curl -sf -F file="@${FILE}" "${upurl}")"
       fi
       if [ "${useshortener}" = 'waaai' ]; then
         tempresult="$(curl -sf -F url="${result}" "${shorturl}")"
