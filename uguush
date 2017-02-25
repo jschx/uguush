@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
 # uguush - upload to uguu.se, teknik.io and 0x0.st
 #
@@ -9,6 +9,7 @@
 n="$(tput sgr0)"
 r="$(tput setaf 1)"
 g="$(tput setaf 2)"
+
 
 # screenshot utility
 fshot='maim --hidecursor'
@@ -61,6 +62,7 @@ Options:
     -w           Take a screenshot of the current window.
     -S           Select a shortener to use. Can be waaai, ptpb, or 0x0.
     -l <url>     Upload the provided url.
+    -p <path>    Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png"
 HELP
 }
 
@@ -192,9 +194,16 @@ upload() {
   done
 }
 
+saveToPath() {
+  if [ "${altPath}" = "true" ]; then
+    DATE=`date "+%Y-%m-%d %H-%M-%S"`
+    cp ${FILE} "$path/$DATE.png"
+  fi
+}
+
 ## PARSE OPTIONS
 
-while getopts :d:fho:su:wxS:l: opt ;do
+while getopts :d:fho:su:wxS:l:p: opt ;do
   case "${opt}" in
     d)
       # set delay value
@@ -229,6 +238,10 @@ while getopts :d:fho:su:wxS:l: opt ;do
       # set url to upload
       lnk='true'
       url="${OPTARG}" ;;
+    p)
+      # set path to save file
+      altPath="true"
+      path="${OPTARG}" ;;
     *)
       # print help and EXIT_FAILURE
       usage
@@ -238,9 +251,12 @@ done
 
 ## EXECUTE FUNCTIONS
 
+
+
 depends
 delay
 screenshot
+saveToPath
 upload
 
 # If the program doesn't exit at the for-loop, the upload failed.
