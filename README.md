@@ -31,6 +31,8 @@ Options:
 `-S` Select a shortener to use. Can be waaai, ptpb, or 0x0.
 
 `-l` Re-upload the given url.
+ 
+ `-p` <path>    Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png"
 
 Requirements
 ============
