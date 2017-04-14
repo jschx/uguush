@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # uguush - upload to uguu.se, teknik.io and 0x0.st
 #
@@ -9,7 +9,6 @@
 n="$(tput sgr0)"
 r="$(tput setaf 1)"
 g="$(tput setaf 2)"
-
 
 # screenshot utility
 fshot='maim --hidecursor'
@@ -56,13 +55,13 @@ Options:
     -f           Take a fullscreen screenshot.
     -h           Show this help message.
     -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, mixtape or lewd.
+    -p <path>    Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png".
     -s           Take a selection screenshot.
     -u <file>    Upload a file.
     -x           Do not notify dbus, update the log, or modify the clipboard.
     -w           Take a screenshot of the current window.
     -S           Select a shortener to use. Can be waaai, ptpb, or 0x0.
     -l <url>     Upload the provided url.
-    -p <path>    Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png"
 HELP
 }
 
@@ -194,16 +193,16 @@ upload() {
   done
 }
 
-saveToPath() {
-  if [ "${altPath}" = "true" ]; then
-    DATE=`date "+%Y-%m-%d %H-%M-%S"`
+path() {
+  if [ "${altpath}" = "true" ]; then
+    DATE=$(date "+%Y-%m-%d %H-%M-%S")
     cp ${FILE} "$path/$DATE.png"
   fi
 }
 
 ## PARSE OPTIONS
 
-while getopts :d:fho:su:wxS:l:p: opt ;do
+while getopts :d:fho:p:su:wxS:l: opt ;do
   case "${opt}" in
     d)
       # set delay value
@@ -240,7 +239,7 @@ while getopts :d:fho:su:wxS:l:p: opt ;do
       url="${OPTARG}" ;;
     p)
       # set path to save file
-      altPath="true"
+      altpath='true'
       path="${OPTARG}" ;;
     *)
       # print help and EXIT_FAILURE
@@ -254,7 +253,7 @@ done
 depends
 delay
 screenshot
-saveToPath
+path
 upload
 
 # If the program doesn't exit at the for-loop, the upload failed.
