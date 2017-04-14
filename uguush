@@ -55,6 +55,7 @@ Options:
     -f           Take a fullscreen screenshot.
     -h           Show this help message.
     -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, mixtape or lewd.
+    -p <path>    Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png".
     -s           Take a selection screenshot.
     -u <file>    Upload a file.
     -x           Do not notify dbus, update the log, or modify the clipboard.
@@ -192,9 +193,16 @@ upload() {
   done
 }
 
+path() {
+  if [ "${altpath}" = "true" ]; then
+    DATE=$(date "+%Y-%m-%d %H-%M-%S")
+    cp ${FILE} "$path/$DATE.png"
+  fi
+}
+
 ## PARSE OPTIONS
 
-while getopts :d:fho:su:wxS:l: opt ;do
+while getopts :d:fho:p:su:wxS:l: opt ;do
   case "${opt}" in
     d)
       # set delay value
@@ -229,6 +237,10 @@ while getopts :d:fho:su:wxS:l: opt ;do
       # set url to upload
       lnk='true'
       url="${OPTARG}" ;;
+    p)
+      # set path to save file
+      altpath='true'
+      path="${OPTARG}" ;;
     *)
       # print help and EXIT_FAILURE
       usage
@@ -241,6 +253,7 @@ done
 depends
 delay
 screenshot
+path
 upload
 
 # If the program doesn't exit at the for-loop, the upload failed.
