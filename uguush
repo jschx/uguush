@@ -1,252 +1,259 @@
 #!/usr/bin/env bash
 #
-# uguush - upload to uguu.se, teknik.io and 0x0.st
+# uguush - command-line uploader for uguu.se and others
 #
 
 ## CONFIGURATION
 
 # colors
-n="$(tput sgr0)"
-r="$(tput setaf 1)"
-g="$(tput setaf 2)"
+c0="$(tput sgr0)"
+c1="$(tput setaf 1)"
+c2="$(tput setaf 2)"
 
-# screenshot utility
-fshot='maim --hidecursor'
-#fshot='scrot'
-sshot='maim -s --hidecursor'
-#sshot='scrot -s'
-wshot="maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') --hidecursor"
-#wshot='scrot -s'
+# filename to use for screenshots
+localTemp="$(mktemp)"
 
-# default delay
-secs='0'
+# screenshot functions
+capFullscreen() {
+	localFile="${localTemp}.png"
+	mv "${localTemp}" "${localFile}"
+	maim --hidecursor "${localFile}"
+}
 
-# image host
-usehost='uguu'
-hosts='uguu teknik 0x0 mixtape ptpb maxfile lewd'
-shorteners='waaai 0x0 ptpb'
+capSelection() {
+	localFile="${localTemp}.png"
+	mv "${localTemp}" "${localFile}"
+	maim -s --hidecursor "${localFile}"
+}
 
-## EXIT IF NO ARGUMENTS ARE FOUND
+capWindow() {
+	localFile="${localTemp}.png"
+	mv "${localTemp}" "${localFile}"
+	maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') --hidecursor
+}
 
-if [ $# -lt 1 ]; then
-  echo '`uguush` requires an argument. Run `uguush -h` for help.'
-  exit 1
-fi
+# delay
+delaySeconds='0'
+
+# hosts and shorteners
+host='uguu'
+shortener=
+hosts='uguu teknik 0x0 mixtape ptpb lewd'
+shorteners='waaai 0x0'
 
 ## FUNCTIONS
 
 depends() {
-  if ! type curl &> /dev/null; then
-    echo >&2 "Checking for curl... [${r}FAILED${n}]"
-    echo '`curl` not found.'
-    exit 1
-  fi
+	if [ ! type curl &> /dev/null ]; then
+		echo >&2 "Checking for curl... [${c1}FAILED${c0}]"
+		echo 'curl not found.'
+		exit 1
+	fi
 }
 
 usage() {
-  cat <<-HELP
+	cat << EOF
+
 uguush - upload to various file hosts
 
 Usage:
-  $(basename "${0}") [options]
+	$(basename "${0}") [options]
 
 Options:
-    -d           Delay the screenshot by the specified number of seconds.
-    -f           Take a fullscreen screenshot.
-    -h           Show this help message.
-    -o           Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, mixtape or lewd.
-    -p <path>    Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png".
-    -s           Take a selection screenshot.
-    -u <file>    Upload a file.
-    -x           Do not notify dbus, update the log, or modify the clipboard.
-    -w           Take a screenshot of the current window.
-    -S           Select a shortener to use. Can be waaai, ptpb, or 0x0.
-    -l <url>     Upload the provided url.
-HELP
+	-d		Delay the screenshot by the specified number of seconds.
+	-f		Take a fullscreen screenshot.
+	-h		Show this help message.
+	-o		Select a host to use. Can be uguu, teknik, 0x0, ptpb, mixtape or lewd.
+	-p <path>	Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png".
+	-s		Take a selection screenshot.
+	-u <file>	Upload a file.
+	-x		Do not notify dbus, update the log, or modify the clipboard.
+	-w		Take a screenshot of the current window.
+	-S		Select a shortener to use. Can be waaai or 0x0.
+	-l <url>	Upload the file at the provided URL.
+
+EOF
 }
 
 delay() {
-  for (( i=secs; i > 0; --i )) ; do
-    echo "${i}..."
-    sleep 1
-  done
+	for (( i=delaySeconds; i > 0; --i )); do
+		echo "${i}..."
+		sleep 1
+	done
 }
 
 screenshot() {
-  if [ "${ful}" ]; then
-    FILE="$(mktemp --suffix=.png)"
-    ${fshot} "${FILE}"
-  elif [ "${sel}" ]; then
-    FILE="$(mktemp --suffix=.png)"
-    ${sshot} "${FILE}" &> /dev/null
-    if ! [ -s "${FILE}" ]; then
-      $(rm "${FILE}" 2> /dev/null)
-      exit
-    fi
-  elif [ "${win}" ]; then
-    FILE="$(mktemp --suffix=.png)"
-    ${wshot} "${FILE}"
-  elif [ "${lnk}" ]; then
-    if [ -f "/usr/share/mime/globs" ]; then
-      urlext="$(curl -sf --head "${url}" | grep 'Content-Type: ' | head -1 | grep -Po '(?<=\ )[^\;]*')"
-      urlext="$(echo "${urlext}" | sed -e "s/\\r//")"
-      urlext="$(cat /usr/share/mime/globs | grep "${urlext}" | sort -r | head -1 | grep -Po '(?<=\.)[^\n]*')"
-    else
-      urlext="$(basename ${url})"
-      urlext=${urlext#*.}
-    fi
-    FILE="$(mktemp --suffix=.${urlext})"
-    $(curl -sf "${url}" > "${FILE}")
-  fi
+	if [ "${doFullscreen}" ]; then
+		capFullscreen
+	elif [ "${doSelection}" ]; then
+		capSelection &> /dev/null
+		if ! [ -s "${TocalFile}" ]; then
+			$(rm "${localFile}" 2> /dev/null)
+			exit
+		fi
+	elif [ "${doWindow}" ]; then
+		capWindow
+	elif [ "${doURL}" ]; then
+		if [ -f "/usr/share/mime/globs" ]; then
+			urlExtension="$(curl -sf --head "${remoteURL}" | grep 'Content-Type: ' | head -1 | grep -Po '(?<=\ )[^\;]*')"
+			urlExtension="$(echo "${urlExtension}" | sed -e "s/\\r//")"
+			urlExtension="$(cat /usr/share/mime/globs | grep "${urlExtension}" | sort -r | head -1 | grep -Po '(?<=\.)[^\n]*')"
+		else
+			urlExtension="$(basename ${remoteURL})"
+			urlExtension=${urlExtension#*.}
+		fi
+		localFile="${localTemp}.${urlExtension}"
+		$(curl -sf "${remoteURL}" > "${localFile}")
+	fi
 }
 
 upload() {
-  for (( i = 1; i <= 3; i++ )); do
-    printf %s "Try #${i}... "
+	for (( i = 1; i <= 3; i++ )); do
+		echo -n "Try #${i}... "
 
-    case "${usehost}" in
-      teknik) upurl='https://api.teknik.io/v1/Upload' ;;
-      0x0) upurl='https://0x0.st/' ;;
-      uguu) upurl='https://uguu.se/api.php?d=upload-tool' ;;
-      ptpb) upurl='https://ptpb.pw/' ;;
-      maxfile) upurl='https://maxfile.ro/static/upload.php' ;;
-      mixtape) upurl='https://mixtape.moe/upload.php' ;;
-      lewd) upurl='https://lewd.se/api.php?d=upload-tool' ;;
-    esac
+		case "${host}" in
+			teknik) hostURL='https://api.teknik.io/v1/Upload' ;;
+			0x0) hostURL='https://0x0.st/' ;;
+			uguu) hostURL='https://uguu.se/api.php?d=upload-tool' ;;
+			ptpb) hostURL='https://ptpb.pw/' ;;
+			mixtape) hostURL='https://mixtape.moe/upload.php' ;;
+			lewd) hostURL='https://lewd.se/api.php?d=upload-tool' ;;
+		esac
 
-    case "${useshortener}" in
-      waaai) shorturl='https://api.waa.ai/shorten' ;;
-      0x0) shorturl='http://0x0.st/' ;;
-      ptpb) shorturl='https://ptpb.pw/u'
-    esac
+		case "${shortener}" in
+			waaai) shortenerURL='https://api.waa.ai/shorten' ;;
+			0x0) shortenerURL='http://0x0.st/' ;;
+			ptpb) shortenerURL='https://ptpb.pw/u'
+		esac
 
-    if [ "${upurl}" = 'unsupported' ]; then
-      echo "[${r}FAILED${n}]"
-      echo "${usehost} doesn't support $([ "${https}" ] && echo HTTPS || echo HTTP)."
-      exit 1
-    else
-      if [ "${usehost}" = 'uguu' ]; then
-        result="$(curl -sf -F file="@${FILE}" "${upurl}")"
-      elif [ "${usehost}" = '0x0' ]; then
-        result="$(curl -sf -F file="@${FILE}" "${upurl}")"
-      elif [ "${usehost}" = 'teknik' ]; then
-        result="$(curl -sf -F file="@${FILE}" "${upurl}")"
-        result="${result##*url\":\"}"
-        result="${result%%\"*}"
-      elif [ "${usehost}" = 'mixtape' ]; then
-        result="$(curl -sf -F files[]="@${FILE}" "${upurl}")"
-        result="$(echo "${result}" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')"
-        result="$(echo "${result//\\\//\/}")"
-      elif [ "${usehost}" = 'ptpb' ]; then
-        result="$(curl -sf -F c="@${FILE}" "${upurl}")"
-        result="${result##*url: }"
-        result="${result%%$'\n'*}"
-      elif [ "${usehost}" = 'maxfile' ]; then
-        result="$(curl -sf -F files[]="@${FILE}" "${upurl}")"
-        result="$(echo "${result}" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')"
-        result="$(echo "https://d.maxfile.ro/${result}")"
-      elif [ "${usehost}" = 'lewd' ]; then
-        result="$(curl -sf -F file="@${FILE}" "${upurl}")"
-      fi
-      if [ "${useshortener}" = 'waaai' ]; then
-        tempresult="$(curl -sf -F url="${result}" "${shorturl}")"
-        code="${tempresult##*short_code\":\"}"
-        code="${code%%\"*}"
-        result="https://waa.ai/${code}"
-        extension="${tempresult##*extension\":}"
-        extension="${extension%%\}*}"
-        if [ "${extension}" != "false" ]; then
-          extension=${extension##\"}
-          extension=${extension%%\"}
-          result="${result}.${extension}"
-        fi
-      elif [ "${useshortener}" = '0x0' ]; then
-        result="$(curl -sf -F shorten="${result}" "${shorturl}")"
-      elif [ "${useshortener}" = 'ptpb' ]; then
-        result="$(curl -sf -F c="${result}" "${shorturl}")"
-      fi
-    fi
+		if [ "${host}" = 'uguu' ]; then
+			uploadResult="$(curl -sf -F file="@${localFile}" "${hostURL}")"
+		elif [ "${host}" = '0x0' ]; then
+			uploadResult="$(curl -sf -F file="@${localFile}" "${hostURL}")"
+		elif [ "${host}" = 'teknik' ]; then
+			uploadResult="$(curl -sf -F file="@${localFile}" "${hostURL}")"
+			uploadResult="${uploadResult##*url\":\"}"
+			uploadResult="${uploadResult%%\"*}"
+		elif [ "${host}" = 'mixtape' ]; then
+			uploadResult="$(curl -sf -F files[]="@${localFile}" "${hostURL}")"
+			uploadResult="$(echo "${uploadResult}" | grep -Eo '"url":"[A-Za-z0-9]+.*",' | sed 's/"url":"//;s/",//')"
+			uploadResult="$(echo "${uploadResult//\\\//\/}")"
+		elif [ "${host}" = 'ptpb' ]; then
+			uploadResult="$(curl -sf -F c="@${localFile}" "${hostURL}")"
+			uploadResult="${uploadResult##*url: }"
+			uploadResult="${uploadResult%%$'\n'*}"
+		elif [ "${host}" = 'lewd' ]; then
+			uploadResult="$(curl -sf -F file="@${localFile}" "${hostURL}")"
+		fi
 
-    if [ "${?}" = 0 ]; then
+		if [ "${shortener}" = 'waaai' ]; then
+			tempResult="$(curl -sf -F url="${uploadResult}" "${shortenerURL}")"
+			shortCode="${tempResult##*short_code\":\"}"
+			shortCode="${shortCode%%\"*}"
+			shortenerResult="https://waa.ai/${shortCode}"
+			shortenerExtension="${tempResult##*extension\":}"
+			shortenerExtension="${shortenerExtension%%\}*}"
+			if [ "${shortenerExtension}" = 'true' ]; then
+				shortenerExtension=${shortenerExtension##\"}
+				shortenerExtension=${shortenerExtension%%\"}
+				shortenerResult="${shortenerResult}.${shortenerExtension}"
+			fi
+		elif [ "${shortener}" = '0x0' ]; then
+			shortenerResult="$(curl -sf -F shorten="${uploadResult}" "${shortenerURL}")"
+		elif [ "${shortener}" = 'ptpb' ]; then
+			shortenerResult="$(curl -sf -F c=@- "${shortenerURL}" <<< "${uploadResult}")"
+		fi
 
-      if [ ! "${nocomm}" ]; then
-        printf %s "${result}" | xclip -selection primary
-        printf %s "${result}" | xclip -selection clipboard
+		if [ "${shortener}" ]; then
+			finalResult="${shortenerResult}"
+		else
+			finalResult="${uploadResult}"
+		fi
 
-        echo "$(date +"%D %R") | "${FILE}" | "${result}"" >> ~/.uguush.log
+		if [ "${?}" = 0 ]; then
 
-        notify-send 'uguu~' "${result}"
-      fi
+			# copy to clipboard, log, and notify (unless $noComms is set)
+			if [ ! "${noComms}" ]; then
+					echo -n "${finalResult}" | xclip -selection primary
+					echo -n "${finalResult}" | xclip -selection clipboard
+					echo "$(date +"%D %R") | "${file}" | "${finalResult}"" >> ~/.uguush.log
+					notify-send 'uguu~' "${finalResult}"
+			fi
+		fi
 
-      echo "[${g}OK${n}]"
-      echo "File has been uploaded: ${result}"
+		echo "[${c2}OK${c0}]"
+		echo "File has been uploaded: ${finalResult}"
 
-      # if we took a screenshot, remove the temporary file
-      if [ -z "${upl}" ]; then
-        rm "${FILE}"
-      fi
+		# if we took a screenshot, remove the temporary file
+		if [ -z "${doFile}" ]; then
+			rm "${localFile}"
+		fi
 
-      exit
-    else
-      echo "[${r}FAILED${n}]"
-    fi
-  done
+		exit
+
+	done
 }
 
 path() {
-  if [ "${altpath}" = "true" ]; then
-    DATE=$(date "+%Y-%m-%d %H-%M-%S")
-    cp ${FILE} "$path/$DATE.png"
-  fi
+	if [ "${saveToPath}" = 'true' ]; then
+		localFilename=$(basename "${localFile}")
+		cp ${localFile} "${pathToSave}/${localFilename}"
+	fi
 }
 
 ## PARSE OPTIONS
 
 while getopts :d:fho:p:su:wxS:l: opt ;do
-  case "${opt}" in
-    d)
-      # set delay value
-      secs="${OPTARG}" ;;
-    f)
-      # fullscreen
-      ful='true' ;;
-    h)
-      # print help
-      usage
-      exit 0 ;;
-    o)
-      # set host
-      [[ "${hosts}" =~ ${OPTARG} ]] && usehost="${OPTARG}" || exit 1 ;;
-    s)
-      # take shot with selection
-      sel='true' ;;
-    u)
-      # change $FILE to the specified file with -u
-      upl='true'
-      FILE="${OPTARG}" ;;
-    w)
-      # take shot of current window
-      win='true' ;;
-    x)
-      # do not notify dbus, update log, or modify clipboard
-      nocomm='true' ;;
-    S)
-      # set shortener
-      [[ "${shorteners}" =~ ${OPTARG} ]] && useshortener="${OPTARG}" || exit 1 ;;
-    l)
-      # set url to upload
-      lnk='true'
-      url="${OPTARG}" ;;
-    p)
-      # set path to save file
-      altpath='true'
-      path="${OPTARG}" ;;
-    *)
-      # print help and EXIT_FAILURE
-      usage
-      exit 1 ;;
-  esac
+	case "${opt}" in
+		d)
+			# set delay value
+			delaySeconds="${OPTARG}" ;;
+		f)
+			# take fullscreen shot
+			doFullscreen='true' ;;
+		h)
+			# print help
+			usage
+			exit 0 ;;
+		o)
+			# set host
+			[[ "${hosts}" =~ "${OPTARG}" ]] && host="${OPTARG}" || exit 1 ;;
+		s)
+			# take shot of selection
+			doSelection='true' ;;
+		u)
+			# change $file to the specified file with -u
+			doFile='true'
+			localFile="${OPTARG}" ;;
+		w)
+			# take shot of current window
+			doWindow='true' ;;
+		x)
+			# do not notify dbus, update log, or modify clipboard
+			noComms='true' ;;
+		S)
+			# set shortener
+			[[ "${shorteners}" =~ "${OPTARG}" ]] && shortener="${OPTARG}" || exit 1 ;;
+		l)
+			# set url to upload
+			doURL='true'
+			remoteURL="${OPTARG}" ;;
+		p)
+			# set path to save file
+			saveToPath='true'
+			pathToSave="${OPTARG}" ;;
+		*)
+			# print help and EXIT_FAILURE
+			usage
+			exit 1 ;;
+	esac
 done
+
+# show usage if no arguments are given
+if [ $# -lt 1 ]; then
+	usage
+	exit 1
+fi
 
 ## EXECUTE FUNCTIONS
 
@@ -256,5 +263,5 @@ screenshot
 path
 upload
 
-# If the program doesn't exit at the for-loop, the upload failed.
+# if the program doesn't exit at the for-loop, the upload failed
 echo 'File was not uploaded, did you specify a valid filename?'
