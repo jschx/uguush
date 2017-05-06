@@ -17,13 +17,13 @@ localTemp="$(mktemp)"
 capFullscreen() {
 	localFile="${localTemp}.png"
 	mv "${localTemp}" "${localFile}"
-	maim --hidecursor "${localFile}"
+	maim -u "${localFile}"
 }
 
 capSelection() {
 	localFile="${localTemp}.png"
 	mv "${localTemp}" "${localFile}"
-	maim -s --hidecursor "${localFile}"
+	maim -s -u "${localFile}"
 }
 
 capWindow() {
@@ -87,7 +87,7 @@ screenshot() {
 		capFullscreen
 	elif [ "${doSelection}" ]; then
 		capSelection &> /dev/null
-		if ! [ -s "${TocalFile}" ]; then
+		if ! [ -s "${localFile}" ]; then
 			$(rm "${localFile}" 2> /dev/null)
 			exit
 		fi
