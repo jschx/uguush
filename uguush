@@ -29,7 +29,7 @@ capSelection() {
 capWindow() {
 	localFile="${localTemp}.png"
 	mv "${localTemp}" "${localFile}"
-	maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') --hidecursor
+	maim -i $(xprop -root _NET_ACTIVE_WINDOW | grep -o '0x.*') -u
 }
 
 # delay
@@ -38,7 +38,7 @@ delaySeconds='0'
 # hosts and shorteners
 host='uguu'
 shortener=
-hosts='uguu teknik 0x0 mixtape ptpb lewd'
+hosts='uguu teknik 0x0 ptpb mixtape lewd fiery'
 shorteners='waaai 0x0'
 
 ## FUNCTIONS
@@ -63,7 +63,7 @@ Options:
 	-d		Delay the screenshot by the specified number of seconds.
 	-f		Take a fullscreen screenshot.
 	-h		Show this help message.
-	-o		Select a host to use. Can be uguu, teknik, 0x0, ptpb, mixtape or lewd.
+	-o		Select a host to use. Can be uguu, teknik, 0x0, ptpb, mixtape, lewd or fiery.
 	-p <path>	Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png".
 	-s		Take a selection screenshot.
 	-u <file>	Upload a file.
@@ -71,6 +71,7 @@ Options:
 	-w		Take a screenshot of the current window.
 	-S		Select a shortener to use. Can be waaai or 0x0.
 	-l <url>	Upload the file at the provided URL.
+	-t <token>	Set token (only for fiery host).
 
 EOF
 }
@@ -118,6 +119,7 @@ upload() {
 			ptpb) hostURL='https://ptpb.pw/' ;;
 			mixtape) hostURL='https://mixtape.moe/upload.php' ;;
 			lewd) hostURL='https://lewd.se/api.php?d=upload-tool' ;;
+			fiery) hostURL='https://safe.fiery.me/api/upload' ;;
 		esac
 
 		case "${shortener}" in
@@ -144,6 +146,13 @@ upload() {
 			uploadResult="${uploadResult%%$'\n'*}"
 		elif [ "${host}" = 'lewd' ]; then
 			uploadResult="$(curl -sf -F file="@${localFile}" "${hostURL}")"
+		elif [ "${host}" = 'fiery' ]; then
+			if [ "${useFieryToken}" = 'true' ]; then
+				uploadResult="$(curl -H "token: ${fieryToken}" -sf -F files[]="@${localFile}" "${hostURL}")"
+			else
+				uploadResult="$(curl -sf -F files[]="@${localFile}" "${hostURL}")"
+			fi
+			uploadResult="$(echo "${uploadResult}" | grep -Eo '"url":"[A-Za-z0-9]+.*"' | sed 's/"url":"//;s/"//')"
 		fi
 
 		if [ "${shortener}" = 'waaai' ]; then
@@ -196,14 +205,14 @@ upload() {
 
 path() {
 	if [ "${saveToPath}" = 'true' ]; then
-		localFilename=$(basename "${localFile}")
-		cp ${localFile} "${pathToSave}/${localFilename}"
+		localFilename=$(date "+%Y-%m-%d %H-%M-%S")
+		cp ${localFile} "${pathToSave}/${localFilename}.png"
 	fi
 }
 
 ## PARSE OPTIONS
 
-while getopts :d:fho:p:su:wxS:l: opt ;do
+while getopts :d:fhl:o:p:st:u:wxS: opt ;do
 	case "${opt}" in
 		d)
 			# set delay value
@@ -215,12 +224,24 @@ while getopts :d:fho:p:su:wxS:l: opt ;do
 			# print help
 			usage
 			exit 0 ;;
+		l)
+			# set url to upload
+			doURL='true'
+			remoteURL="${OPTARG}" ;;
 		o)
 			# set host
 			[[ "${hosts}" =~ "${OPTARG}" ]] && host="${OPTARG}" || exit 1 ;;
+		p)
+			# set path to save file
+			saveToPath='true'
+			pathToSave="${OPTARG}" ;;
 		s)
 			# take shot of selection
 			doSelection='true' ;;
+		t)
+			# use token for fiery host
+			useFieryToken='true'
+			fieryToken="${OPTARG}" ;;
 		u)
 			# change $file to the specified file with -u
 			doFile='true'
@@ -234,14 +255,6 @@ while getopts :d:fho:p:su:wxS:l: opt ;do
 		S)
 			# set shortener
 			[[ "${shorteners}" =~ "${OPTARG}" ]] && shortener="${OPTARG}" || exit 1 ;;
-		l)
-			# set url to upload
-			doURL='true'
-			remoteURL="${OPTARG}" ;;
-		p)
-			# set path to save file
-			saveToPath='true'
-			pathToSave="${OPTARG}" ;;
 		*)
 			# print help and EXIT_FAILURE
 			usage
