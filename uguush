@@ -147,11 +147,7 @@ upload() {
 		elif [ "${host}" = 'lewd' ]; then
 			uploadResult="$(curl -sf -F file="@${localFile}" "${hostURL}")"
 		elif [ "${host}" = 'fiery' ]; then
-			if [ "${useFieryToken}" = 'true' ]; then
-				uploadResult="$(curl -H "token: ${fieryToken}" -sf -F files[]="@${localFile}" "${hostURL}")"
-			else
-				uploadResult="$(curl -sf -F files[]="@${localFile}" "${hostURL}")"
-			fi
+			uploadResult="$(curl -H "token: ${fieryToken}" -sf -F files[]="@${localFile}" "${hostURL}")"
 			uploadResult="$(echo "${uploadResult}" | grep -Eo '"url":"[A-Za-z0-9]+.*"' | sed 's/"url":"//;s/"//')"
 		fi
 
@@ -240,7 +236,6 @@ while getopts :d:fhl:o:p:st:u:wxS: opt ;do
 			doSelection='true' ;;
 		t)
 			# use token for fiery host
-			useFieryToken='true'
 			fieryToken="${OPTARG}" ;;
 		u)
 			# change $file to the specified file with -u
