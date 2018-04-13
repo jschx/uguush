@@ -71,7 +71,6 @@ Options:
 	-w		Take a screenshot of the current window.
 	-S		Select a shortener to use. Can be waaai or 0x0.
 	-l <url>	Upload the file at the provided URL.
-	-t <token>	Set token (only for fiery host).
 
 EOF
 }
@@ -147,7 +146,7 @@ upload() {
 		elif [ "${host}" = 'lewd' ]; then
 			uploadResult="$(curl -sf -F file="@${localFile}" "${hostURL}")"
 		elif [ "${host}" = 'fiery' ]; then
-			uploadResult="$(curl -H "token: ${fieryToken}" -sf -F files[]="@${localFile}" "${hostURL}")"
+			uploadResult="$(curl -sf -F files[]="@${localFile}" "${hostURL}")"
 			uploadResult="$(echo "${uploadResult}" | grep -Eo '"url":"[A-Za-z0-9]+.*"' | sed 's/"url":"//;s/"//')"
 		fi
 
@@ -208,7 +207,7 @@ path() {
 
 ## PARSE OPTIONS
 
-while getopts :d:fhl:o:p:st:u:wxS: opt ;do
+while getopts :d:fhl:o:p:su:wxS: opt ;do
 	case "${opt}" in
 		d)
 			# set delay value
@@ -234,9 +233,6 @@ while getopts :d:fhl:o:p:st:u:wxS: opt ;do
 		s)
 			# take shot of selection
 			doSelection='true' ;;
-		t)
-			# use token for fiery host
-			fieryToken="${OPTARG}" ;;
 		u)
 			# change $file to the specified file with -u
 			doFile='true'

@@ -24,15 +24,13 @@ Options:
 
 `-u <file>` Upload a file.
 
-`-x` Suppress communications: Do not log, modify clipboard, or notify DBUS.
+`-x` Do not notify dbus, update the log, or modify the clipboard.
 
 `-w` Take a screenshot of the current window.
 
 `-S` Select a shortener to use. Can be waaai or 0x0.
 
 `-l` Upload the file at the provided URL.
-
-`-t <token>` Set token (only for fiery host).
 
 ## Requirements
 
