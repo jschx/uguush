@@ -16,7 +16,7 @@ Options:
 
 `-h` Show this help message.
 
-`-o` Select a host to use. Can be uguu, teknik, 0x0, ptpb, mixtape, lewd or fiery.
+`-o` Select a host to use. Can be uguu, teknik, 0x0, ptpb, mixtape, lewd, fiery or doko.
 
 `-p <path>` Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png"
 
