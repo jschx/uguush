@@ -1,12 +1,10 @@
-uguush
-========
+# uguush
 
 command-line uploader for various file hosts
 
-![](https://u.teknik.io/WldwN2.png)
+![Usage](https://u.teknik.io/WldwN2.png)
 
-Usage
-=====
+## Usage
 
 uguush [options]
 
@@ -18,24 +16,23 @@ Options:
 
 `-h` Show this help message.
 
-`-o` Select a host to use. Can be uguu, teknik, 0x0, ptpb, maxfile, or mixtape.
+`-o` Select a host to use. Can be uguu, teknik, 0x0, ptpb, mixtape, lewd or fiery.
+
+`-p <path>` Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png"
 
 `-s` Take a selection screenshot.
 
-`-u` <file> Upload a file.
+`-u <file>` Upload a file.
 
-`-w` Take a window screenshot.
+`-x` Do not notify dbus, update the log, or modify the clipboard.
 
-`-x` Suppress communications: Do not log, modify clipboard, or notify DBUS.
+`-w` Take a screenshot of the current window.
 
-`-S` Select a shortener to use. Can be waaai, ptpb, or 0x0.
+`-S` Select a shortener to use. Can be waaai or 0x0.
 
-`-l` Re-upload the given url.
- 
- `-p` <path>    Custom path to save the image to. Saves the image as "%Y-%m-%d %H-%M-%S.png"
+`-l` Upload the file at the provided URL.
 
-Requirements
-============
+## Requirements
 
 - curl
 - libnotify (for notifications)
@@ -44,13 +41,11 @@ Requirements
 - xclip (for clip-board support)
 - xprop (for current window capture)
 
-Todo
-====
+## Todo
 
 POSIX sh compliance.
 
-Credit
-======
+## Credit
 
 Big thanks to [neku](https://github.com/nokonoko) for creating pomf and uguu!
 
