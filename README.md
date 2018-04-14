@@ -47,12 +47,10 @@ POSIX sh compliance.
 
 ## Credit
 
+Huge thanks to all [GitHub contributors](https://github.com/jschx/uguush/graphs/contributors).
+
 Big thanks to [neku](https://github.com/nokonoko) for creating pomf and uguu!
 
 Inspired by [onodera-punpun](https://github.com/onodera-punpun)'s pomf.sh.
 
 Original upload functionality by [KittyKatt](https://github.com/KittyKatt).
-
-**New** upload functionality and refactoring by [arianon](https://github.com/arianon).
-
-Various features and help from [DanielFGray](https://github.com/DanielFGray).
